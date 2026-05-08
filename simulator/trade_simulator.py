@@ -17,8 +17,8 @@ import pandas as pd
 
 from brain.prerequisites import Prerequisites
 from brain.rules import Rules, SIGNAL_BUY, SIGNAL_SELL, SIGNAL_HOLD
-from brain.quality_checks import QualityChecks
-from brain.config import QualityConfig, DEFAULT
+from brain.quality_checks import QualityChecks, RegimeFilter, SessionFilter
+from brain.config import QualityConfig, DEFAULT, MEDIUM
 from brain.llm_validator import LLMValidator, LLMValidation
 
 
@@ -182,8 +182,9 @@ class TradeSimulator:
         self.take_profit_mult = take_profit_mult
         self._cfg             = config
 
-        self._prereqs = Prerequisites()
-        self._rules   = Rules()
+        self._prereqs       = Prerequisites()
+        self._rules         = Rules()
+        self._regime_filter = RegimeFilter()
         self._quality = QualityChecks(
             block_counter_trend    = config.block_counter_trend,
             min_agreement          = config.min_agreement,
@@ -198,6 +199,7 @@ class TradeSimulator:
             min_atr_multiplier     = config.min_atr_multiplier,
             max_risk_pct           = config.max_risk_pct,
             atr_stop_multiplier    = config.atr_stop_multiplier,
+            session_filter         = SessionFilter(),   # London + NY, 15-min blackouts
         )
         self._llm: Optional[LLMValidator] = None
         if config.llm_enabled:
@@ -215,7 +217,12 @@ class TradeSimulator:
         if not prereq.passed:
             raise ValueError(f"Prerequisites failed:\n{prereq}")
 
-        signals_df = self._rules.evaluate(df)
+        # Pre-compute regimes once — reused by regime-aware rules AND quality checks
+        if verbose:
+            print("  Computing regimes for all bars...")
+        regimes   = self._regime_filter.detect_all(df)
+
+        signals_df = self._rules.evaluate(df, regimes=regimes)
         rule_cols  = [c for c in signals_df.columns if c not in ("vote_sum", "signal")]
 
         equity           = self.initial_capital
@@ -278,6 +285,7 @@ class TradeSimulator:
                 bars_since_last_trade = bars_since_trade,
                 daily_pnl             = daily_pnl,
                 portfolio_heat        = 0.0,
+                precomputed_regime    = regimes[i],   # no re-computation of ADX
             )
 
             if not qc.approved:

@@ -154,6 +154,104 @@ class RegimeFilter:
             return 1.0
         return short_atr / long_atr
 
+    def detect_all(self, df: pd.DataFrame) -> List[Optional[RegimeState]]:
+        """Pre-compute regime for every bar. Called once before the main loop."""
+        return [self.detect(df, i) for i in range(len(df))]
+
+
+# ══════════════════════════════════════════════════════════════════════
+# Session / Timezone Filter
+# ══════════════════════════════════════════════════════════════════════
+
+class SessionFilter:
+    """
+    Blocks trades outside active trading sessions and during blackout windows.
+
+    All internal logic works in UTC. If the DataFrame index is timezone-aware,
+    timestamps are converted automatically. If it is naive, UTC is assumed.
+
+    Sessions (UTC):
+      London    07:00 – 16:30   (conservative: covers BST/GMT shift)
+      New York  13:30 – 21:00   (conservative: covers EDT/EST shift)
+      Overlap   13:30 – 16:30   (highest liquidity)
+
+    Blackout windows (configurable):
+      - First N minutes of every session open  (wide spread, erratic)
+      - Last  N minutes before every session close (illiquid, gap risk)
+      - Weekends (Saturday + Sunday)
+    """
+
+    # (hour, minute) in UTC — conservative boundaries
+    LONDON_OPEN    = (7,  0)
+    LONDON_CLOSE   = (16, 30)
+    NY_OPEN        = (13, 30)
+    NY_CLOSE       = (21,  0)
+
+    def __init__(
+        self,
+        sessions:            List[str] = None,   # ['london', 'new_york'] by default
+        blackout_open_min:   int = 15,
+        blackout_close_min:  int = 15,
+        block_weekends:      bool = True,
+    ):
+        self.sessions           = sessions or ["london", "new_york"]
+        self.blackout_open_min  = blackout_open_min
+        self.blackout_close_min = blackout_close_min
+        self.block_weekends     = block_weekends
+
+        # Build (open_min, close_min) pairs in minutes-since-midnight UTC
+        _map = {
+            "london":   (self.LONDON_OPEN, self.LONDON_CLOSE),
+            "new_york": (self.NY_OPEN,     self.NY_CLOSE),
+        }
+        self._windows = [
+            (_s[0] * 60 + _s[1], _e[0] * 60 + _e[1])
+            for name in self.sessions
+            for _s, _e in [_map[name]]
+        ]
+
+    def is_allowed(self, ts: pd.Timestamp) -> tuple:
+        """Return (allowed: bool, reason: str)."""
+        # Normalise to UTC
+        if ts.tzinfo is not None:
+            ts_utc = ts.tz_convert("UTC")
+        else:
+            ts_utc = ts  # assume UTC
+
+        # Weekend check
+        if self.block_weekends and ts_utc.weekday() >= 5:
+            return False, f"[Session] Weekend — no trading ({ts_utc.day_name()})"
+
+        now_min = ts_utc.hour * 60 + ts_utc.minute
+
+        for open_min, close_min in self._windows:
+            if now_min < open_min or now_min > close_min:
+                continue  # not in this session window
+
+            # Inside session — check blackout zones
+            if now_min < open_min + self.blackout_open_min:
+                return False, (
+                    f"[Session] Opening blackout "
+                    f"({ts_utc.strftime('%H:%M')} UTC, first {self.blackout_open_min} min)"
+                )
+            if now_min > close_min - self.blackout_close_min:
+                return False, (
+                    f"[Session] Closing blackout "
+                    f"({ts_utc.strftime('%H:%M')} UTC, last {self.blackout_close_min} min)"
+                )
+            return True, ""  # in session and outside blackout
+
+        # Not inside any active session window
+        hhmm = f"{ts_utc.hour:02d}:{ts_utc.minute:02d} UTC"
+        return False, f"[Session] Outside active sessions ({hhmm})"
+
+    def is_daily_data(self, df: pd.DataFrame) -> bool:
+        """Infer whether the DataFrame contains daily (or coarser) bars."""
+        if len(df) < 2:
+            return False
+        delta = (df.index[1] - df.index[0]).total_seconds()
+        return delta >= 86_400  # >= 1 day
+
 
 # ══════════════════════════════════════════════════════════════════════
 # Position Sizer  (runs after all gates pass)
@@ -261,23 +359,24 @@ class QualityResult:
 
 class QualityChecks:
     """
-    Six-layer quality gate.  Instantiate once, call .check() per bar.
+    Six-layer quality gate + session filter.  Instantiate once, call .check() per bar.
 
     Parameters
     ----------
-    block_counter_trend   : Block signals that go against a strong trend (ADX > 30)
-    min_agreement         : Min number of rules that must agree on the direction
+    block_counter_trend   : Block signals against a strong trend (ADX > 30)
+    min_agreement         : Min rules that must agree on the direction
     max_daily_loss_pct    : Stop trading for the day after this equity loss
     max_portfolio_heat_pct: Max total open-risk as fraction of equity
-    health_window         : Number of recent closed trades for rolling metrics
-    min_sharpe            : Rolling Sharpe threshold (blocks new trades if below)
+    health_window         : Recent closed trades for rolling metrics
+    min_sharpe            : Rolling Sharpe threshold
     min_profit_factor     : Rolling Profit Factor threshold
     max_drawdown_pct      : Equity drawdown kill-switch
     max_consecutive_losses: Consecutive-loss circuit-breaker
     cooldown_bars         : Minimum bars between two trades
-    min_atr_multiplier    : Block signals in dead/ultra-low-volatility markets
-    max_risk_pct          : Hard cap on equity at risk per trade (2% institutional standard)
-    atr_stop_multiplier   : ATR multiples used as the effective stop distance
+    min_atr_multiplier    : Block signals in dead markets
+    max_risk_pct          : Hard cap on equity at risk per trade
+    atr_stop_multiplier   : ATR multiples used as effective stop distance
+    session_filter        : SessionFilter instance (None = disable, daily data auto-skips)
     """
 
     def __init__(
@@ -302,6 +401,8 @@ class QualityChecks:
         # Sizing
         max_risk_pct:           float = 0.02,
         atr_stop_multiplier:    float = 2.0,
+        # Session / timezone
+        session_filter:         Optional[SessionFilter] = None,
     ):
         self.block_counter_trend    = block_counter_trend
         self.min_agreement          = min_agreement
@@ -314,6 +415,7 @@ class QualityChecks:
         self.max_consecutive_losses = max_consecutive_losses
         self.cooldown_bars          = cooldown_bars
         self.min_atr_multiplier     = min_atr_multiplier
+        self._session               = session_filter
 
         self._regime  = RegimeFilter()
         self._sizer   = PositionSizer(
@@ -328,7 +430,7 @@ class QualityChecks:
     def check(
         self,
         signal:               int,
-        rule_votes:           pd.Series,   # individual rule signals at this bar
+        rule_votes:           pd.Series,
         df:                   pd.DataFrame,
         bar_index:            int,
         equity:               float,
@@ -337,7 +439,8 @@ class QualityChecks:
         consecutive_losses:   int,
         bars_since_last_trade: int,
         daily_pnl:            float,
-        portfolio_heat:       float,       # equity units of open risk
+        portfolio_heat:       float,
+        precomputed_regime:   Optional[RegimeState] = None,  # avoids duplicate ADX computation
     ) -> QualityResult:
 
         if signal == SIGNAL_HOLD:
@@ -346,7 +449,8 @@ class QualityChecks:
         reasons: List[str] = []
 
         # ── Layer 1: Regime ───────────────────────────────────────────
-        regime = self._regime.detect(df, bar_index)
+        regime = precomputed_regime if precomputed_regime is not None \
+                 else self._regime.detect(df, bar_index)
         vol_multiplier = 1.0
         if regime is not None:
             vol_multiplier = regime.vol_multiplier
@@ -451,6 +555,13 @@ class QualityChecks:
         bars_since_last_trade: int,
     ) -> List[str]:
         reasons = []
+
+        # Session / timezone gate (skip for daily data — no intraday time info)
+        if self._session is not None and not self._session.is_daily_data(df):
+            ts = df.index[bar_index]
+            allowed, reason = self._session.is_allowed(ts)
+            if not allowed:
+                reasons.append(reason)
 
         # Drawdown kill-switch
         if len(equity_curve) > 1:
