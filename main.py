@@ -18,6 +18,7 @@ from pathlib import Path
 from simulator.ohlc_data import OHLCData
 from simulator.trade_simulator import TradeSimulator
 from brain.config import PRESETS, MEDIUM, QualityConfig
+from brain.health_rules import HealthRules
 
 
 def parse_args() -> argparse.Namespace:
@@ -45,7 +46,9 @@ def parse_args() -> argparse.Namespace:
 
     # output
     p.add_argument("--verbose",     action="store_true", help="Print each trade")
-    p.add_argument("--save-trades", action="store_true", help="Save trades.csv")
+    p.add_argument("--save-trades",  action="store_true", help="Save trades.csv")
+    p.add_argument("--health",       action="store_true", help="Run system health checks (walk-forward, regime coverage)")
+    p.add_argument("--free-params",  type=int, default=0, help="Number of free parameters (for health check)")
     return p.parse_args()
 
 
@@ -106,6 +109,19 @@ def main() -> None:
         out = Path("trades.csv")
         trades_df.to_csv(out, index=False)
         print(f"\nTrades saved to {out}")
+
+    if args.health:
+        from brain.quality_checks import RegimeFilter
+        print("\nRunning System Health checks...")
+        regimes = RegimeFilter().detect_all(df)
+        health = HealthRules()
+        report = health.validate(
+            trades        = result.closed_trades,
+            df            = df,
+            regimes       = regimes,
+            n_free_params = args.free_params,
+        )
+        print(report.summary())
 
 
 if __name__ == "__main__":

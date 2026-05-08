@@ -20,6 +20,11 @@ from typing import List, Optional, Tuple
 import numpy as np
 import pandas as pd
 
+try:
+    from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+except ImportError:
+    from backports.zoneinfo import ZoneInfo, ZoneInfoNotFoundError  # type: ignore
+
 from .rules import SIGNAL_BUY, SIGNAL_SELL, SIGNAL_HOLD
 
 
@@ -167,81 +172,99 @@ class SessionFilter:
     """
     Blocks trades outside active trading sessions and during blackout windows.
 
-    All internal logic works in UTC. If the DataFrame index is timezone-aware,
-    timestamps are converted automatically. If it is naive, UTC is assumed.
+    Session boundaries are defined in their LOCAL timezone so DST is handled
+    automatically by the OS/Python timezone database (tzdata on Windows).
+    All comparisons happen after converting the bar timestamp to the session's
+    local time — no hardcoded UTC offsets that would drift when clocks change.
 
-    Sessions (UTC):
-      London    07:00 – 16:30   (conservative: covers BST/GMT shift)
-      New York  13:30 – 21:00   (conservative: covers EDT/EST shift)
-      Overlap   13:30 – 16:30   (highest liquidity)
+    Supported sessions:
+      new_york  09:30 – 16:00  America/New_York   (EDT = UTC-4, EST = UTC-5)
+      london    08:00 – 16:30  Europe/London       (BST = UTC+1, GMT = UTC+0)
+      sydney    10:00 – 16:00  Australia/Sydney    (AEST/AEDT — opposite hemisphere)
+      tokyo     09:00 – 15:30  Asia/Tokyo          (JST = UTC+9, no DST)
 
     Blackout windows (configurable):
-      - First N minutes of every session open  (wide spread, erratic)
-      - Last  N minutes before every session close (illiquid, gap risk)
-      - Weekends (Saturday + Sunday)
+      - First N minutes after session open   (wide spread, erratic fills)
+      - Last  N minutes before session close (illiquid, gap risk)
+      - Weekends (Saturday + Sunday in UTC)
     """
 
-    # (hour, minute) in UTC — conservative boundaries
-    LONDON_OPEN    = (7,  0)
-    LONDON_CLOSE   = (16, 30)
-    NY_OPEN        = (13, 30)
-    NY_CLOSE       = (21,  0)
+    # (iana_timezone, (open_h, open_m), (close_h, close_m)) — all LOCAL times
+    _SESSION_DEFS: dict = {
+        "new_york": ("America/New_York", (9,  30), (16,  0)),
+        "london":   ("Europe/London",    (8,   0), (16, 30)),
+        "sydney":   ("Australia/Sydney", (10,  0), (16,  0)),
+        "tokyo":    ("Asia/Tokyo",       (9,   0), (15, 30)),
+    }
 
     def __init__(
         self,
-        sessions:            List[str] = None,   # ['london', 'new_york'] by default
-        blackout_open_min:   int = 15,
-        blackout_close_min:  int = 15,
-        block_weekends:      bool = True,
+        sessions:           List[str] = None,   # ['london', 'new_york'] by default
+        blackout_open_min:  int  = 15,
+        blackout_close_min: int  = 15,
+        block_weekends:     bool = True,
     ):
         self.sessions           = sessions or ["london", "new_york"]
         self.blackout_open_min  = blackout_open_min
         self.blackout_close_min = blackout_close_min
         self.block_weekends     = block_weekends
 
-        # Build (open_min, close_min) pairs in minutes-since-midnight UTC
-        _map = {
-            "london":   (self.LONDON_OPEN, self.LONDON_CLOSE),
-            "new_york": (self.NY_OPEN,     self.NY_CLOSE),
-        }
-        self._windows = [
-            (_s[0] * 60 + _s[1], _e[0] * 60 + _e[1])
-            for name in self.sessions
-            for _s, _e in [_map[name]]
-        ]
+        # Pre-build ZoneInfo objects; fall back gracefully if tzdata is missing
+        self._zones: List[Tuple] = []
+        for name in self.sessions:
+            if name not in self._SESSION_DEFS:
+                raise ValueError(f"Unknown session '{name}'. "
+                                 f"Valid: {list(self._SESSION_DEFS)}")
+            tz_name, (oh, om), (ch, cm) = self._SESSION_DEFS[name]
+            try:
+                tz = ZoneInfo(tz_name)
+            except (ZoneInfoNotFoundError, KeyError):
+                # tzdata package not installed — fall back to UTC window
+                tz = None
+            open_min  = oh * 60 + om
+            close_min = ch * 60 + cm
+            self._zones.append((name, tz, tz_name, open_min, close_min))
 
     def is_allowed(self, ts: pd.Timestamp) -> tuple:
         """Return (allowed: bool, reason: str)."""
-        # Normalise to UTC
+        # Normalise to UTC-aware
         if ts.tzinfo is not None:
             ts_utc = ts.tz_convert("UTC")
         else:
-            ts_utc = ts  # assume UTC
+            ts_utc = ts.tz_localize("UTC")
 
-        # Weekend check
+        # Weekend check (UTC calendar day)
         if self.block_weekends and ts_utc.weekday() >= 5:
             return False, f"[Session] Weekend — no trading ({ts_utc.day_name()})"
 
-        now_min = ts_utc.hour * 60 + ts_utc.minute
+        for name, tz, tz_name, open_min, close_min in self._zones:
+            if tz is not None:
+                # Convert to session-local time — DST handled by zoneinfo
+                ts_local = ts_utc.tz_convert(tz)
+            else:
+                # tzdata unavailable: operate in UTC (degraded mode)
+                ts_local = ts_utc
 
-        for open_min, close_min in self._windows:
-            if now_min < open_min or now_min > close_min:
+            local_min = ts_local.hour * 60 + ts_local.minute
+
+            if local_min < open_min or local_min > close_min:
                 continue  # not in this session window
 
-            # Inside session — check blackout zones
-            if now_min < open_min + self.blackout_open_min:
+            # Inside session — apply blackout zones
+            if local_min < open_min + self.blackout_open_min:
+                local_str = ts_local.strftime("%H:%M")
                 return False, (
-                    f"[Session] Opening blackout "
-                    f"({ts_utc.strftime('%H:%M')} UTC, first {self.blackout_open_min} min)"
+                    f"[Session] {name} opening blackout "
+                    f"({local_str} {tz_name}, first {self.blackout_open_min} min)"
                 )
-            if now_min > close_min - self.blackout_close_min:
+            if local_min > close_min - self.blackout_close_min:
+                local_str = ts_local.strftime("%H:%M")
                 return False, (
-                    f"[Session] Closing blackout "
-                    f"({ts_utc.strftime('%H:%M')} UTC, last {self.blackout_close_min} min)"
+                    f"[Session] {name} closing blackout "
+                    f"({local_str} {tz_name}, last {self.blackout_close_min} min)"
                 )
             return True, ""  # in session and outside blackout
 
-        # Not inside any active session window
         hhmm = f"{ts_utc.hour:02d}:{ts_utc.minute:02d} UTC"
         return False, f"[Session] Outside active sessions ({hhmm})"
 
