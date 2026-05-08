@@ -77,10 +77,19 @@ class Prerequisites:
             errors.append("Found bars where low > open or close")
         return errors
 
+    MAX_ZERO_VOL_PCT = 0.005   # allow up to 0.5% zero-volume bars (real M1 data has gaps)
+
     def _check_volume(self, df: pd.DataFrame) -> List[str]:
         zero_vol = (df["volume"] <= self.MIN_VOLUME).sum()
-        if zero_vol > 0:
-            return [f"{zero_vol} bars have zero/minimal volume"]
+        if zero_vol == 0:
+            return []
+        # Tolerate a tiny fraction — real broker M1 data has occasional no-tick bars
+        pct = zero_vol / len(df)
+        if pct > self.MAX_ZERO_VOL_PCT:
+            return [
+                f"{zero_vol} bars ({pct*100:.2f}%) have zero/minimal volume "
+                f"(max allowed {self.MAX_ZERO_VOL_PCT*100:.1f}%)"
+            ]
         return []
 
     def _check_spread(self, df: pd.DataFrame) -> List[str]:

@@ -6,6 +6,13 @@ __pycache__/
 venv/
 dist/
 build/
+# Exclude large raw MT5 exports but allow the committed sample
 *.csv
+!data/xauusd_m1_sample.csv
 !data/.gitkeep
+
+# Temp scripts and outputs
+_prep_data.py
+trades.csv
+daily_performance.log
 .DS_Store

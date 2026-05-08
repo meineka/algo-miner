@@ -80,29 +80,82 @@ class OHLCData:
         df.index.name = "datetime"
         return df
 
+    # Column aliases — maps source column names to canonical names
+    _COL_ALIASES = {
+        "tick_volume": "volume",
+        "vol":         "volume",
+        "date":        "time",
+        "datetime":    "time",
+        "timestamp":   "time",
+    }
+
     @classmethod
-    def from_csv(cls, path: str | Path, datetime_col: str = "datetime") -> pd.DataFrame:
+    def from_csv(cls, path: str | Path) -> pd.DataFrame:
         """
         Load OHLC data from a CSV file.
 
-        The CSV must have columns: datetime, open, high, low, close, volume
-        (case-insensitive).  datetime is parsed and set as the index.
+        Auto-detects:
+          - Encoding : UTF-16 (MT5 default), UTF-8-BOM, UTF-8
+          - Separator: semicolon (MT5) or comma
+          - Column names: MT5 names (tick_volume, time) mapped to canonical
+            (volume, datetime)
+
+        Canonical output columns: open, high, low, close, volume
+        Index: DatetimeIndex named 'datetime', sorted ascending.
+
+        Supported source formats
+        ────────────────────────
+        MT5  : time;open;high;low;close;tick_volume;spread;real_volume  (UTF-16)
+        Generic: datetime,open,high,low,close,volume  (UTF-8/UTF-8-BOM)
         """
-        df = pd.read_csv(path)
-        df.columns = df.columns.str.lower()
+        path = Path(path)
 
-        if datetime_col not in df.columns:
-            raise ValueError(f"Column '{datetime_col}' not found.  Available: {list(df.columns)}")
+        # 1. Detect encoding
+        for enc in ("utf-16", "utf-8-sig", "utf-8", "latin-1"):
+            try:
+                with open(path, encoding=enc) as fh:
+                    first = fh.read(256)
+                encoding = enc
+                break
+            except (UnicodeDecodeError, UnicodeError):
+                continue
+        else:
+            encoding = "utf-8"
 
-        df[datetime_col] = pd.to_datetime(df[datetime_col])
-        df = df.set_index(datetime_col).sort_index()
+        # 2. Detect separator
+        sep = ";" if ";" in first else ","
 
+        df = pd.read_csv(path, sep=sep, encoding=encoding)
+        df.columns = df.columns.str.lower().str.strip()
+
+        # 3. Apply column aliases
+        df = df.rename(columns=cls._COL_ALIASES)
+
+        # 4. Locate datetime column
+        time_col = next(
+            (c for c in ("time", "datetime", "date", "timestamp") if c in df.columns),
+            None,
+        )
+        if time_col is None:
+            raise ValueError(
+                f"No datetime column found in {path.name}. "
+                f"Columns present: {list(df.columns)}"
+            )
+
+        df[time_col] = pd.to_datetime(df[time_col])
+        df = df.set_index(time_col).sort_index()
+        df.index.name = "datetime"
+
+        # 5. Validate required columns
         required = {"open", "high", "low", "close", "volume"}
         missing = required - set(df.columns)
         if missing:
-            raise ValueError(f"CSV missing required columns: {missing}")
+            raise ValueError(
+                f"CSV missing required columns: {missing}. "
+                f"Columns found: {list(df.columns)}"
+            )
 
-        return df
+        return df[["open", "high", "low", "close", "volume"]].copy()
 
     @classmethod
     def to_csv(cls, df: pd.DataFrame, path: str | Path) -> None:
