@@ -26,7 +26,7 @@ class Prerequisites:
     """
 
     MIN_BARS = 50          # need enough history for indicators
-    MAX_SPREAD_PCT = 0.05  # max allowed O/H spread as fraction of close
+    MAX_SPREAD_PCT = 0.10  # max allowed H-L spread as fraction of close
     MIN_VOLUME = 1         # non-zero volume required
 
     def check(self, df: pd.DataFrame) -> PrerequisiteResult:

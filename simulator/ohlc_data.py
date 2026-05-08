@@ -120,7 +120,7 @@ class OHLCData:
             f"Bars    : {len(df)}\n"
             f"From    : {df.index[0]}\n"
             f"To      : {df.index[-1]}\n"
-            f"Close ↑ : {df['close'].max():.4f}\n"
-            f"Close ↓ : {df['close'].min():.4f}\n"
+            f"Close Hi : {df['close'].max():.4f}\n"
+            f"Close Lo : {df['close'].min():.4f}\n"
             f"Avg Vol : {df['volume'].mean():.0f}"
         )
