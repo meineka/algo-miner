@@ -119,4 +119,38 @@ LOOSE = QualityConfig(
     llm_min_confidence     = 50,
 )
 
-PRESETS = {"strict": STRICT, "default": DEFAULT, "loose": LOOSE}
+# ──────────────────────────────────────────────────────────────────────
+# MEDIUM — balanced for live/paper trading. Default preset.
+#
+# Gate                    Value     Reasoning
+# ─────────────────────── ───────── ──────────────────────────────────────
+# min_agreement           3 / 4     Solid majority, not unanimous
+# max_risk_pct            1.5%      Hurts but does not ruin
+# max_daily_loss          2.5%      Realistic intraday limit
+# max_portfolio_heat      6%        Standard retail algo threshold
+# min_sharpe (rolling)    0.7       Meaningful floor, not paralysing
+# min_profit_factor       1.15      Slightly above break-even
+# max_drawdown            12%       Painful but survivable
+# max_consecutive_losses  4         Gives system room to recover
+# cooldown_bars           2         No churning, not crippling
+# LLM min_confidence      75%       Clearly convinced, not vague
+# ──────────────────────────────────────────────────────────────────────
+MEDIUM = QualityConfig(
+    block_counter_trend    = True,
+    min_agreement          = 3,
+    max_daily_loss_pct     = 0.025,   # 2.5%
+    max_portfolio_heat_pct = 0.060,   # 6%
+    health_window          = 30,
+    min_sharpe             = 0.7,
+    min_profit_factor      = 1.15,
+    max_drawdown_pct       = 0.120,   # 12%
+    max_consecutive_losses = 4,
+    cooldown_bars          = 2,
+    min_atr_multiplier     = 0.001,
+    max_risk_pct           = 0.015,   # 1.5%
+    atr_stop_multiplier    = 2.0,
+    llm_enabled            = False,   # enable explicitly with --llm
+    llm_min_confidence     = 75,
+)
+
+PRESETS = {"strict": STRICT, "medium": MEDIUM, "default": DEFAULT, "loose": LOOSE}

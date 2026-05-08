@@ -17,7 +17,7 @@ from pathlib import Path
 
 from simulator.ohlc_data import OHLCData
 from simulator.trade_simulator import TradeSimulator
-from brain.config import PRESETS, STRICT, DEFAULT, QualityConfig
+from brain.config import PRESETS, MEDIUM, QualityConfig
 
 
 def parse_args() -> argparse.Namespace:
@@ -29,8 +29,8 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--seed",   type=int, default=42,   help="Random seed")
 
     # preset
-    p.add_argument("--preset", type=str, default="default",
-                   choices=["strict", "default", "loose"],
+    p.add_argument("--preset", type=str, default="medium",
+                   choices=["strict", "medium", "default", "loose"],
                    help="Quality gate preset (strict = no BS)")
 
     # overrides
@@ -67,7 +67,7 @@ def main() -> None:
     print()
 
     # ── Config ───────────────────────────────────────────────────────
-    cfg: QualityConfig = PRESETS[args.preset]
+    cfg: QualityConfig = PRESETS.get(args.preset, MEDIUM)
 
     # Inject LLM flag if requested (keep rest of preset intact)
     if args.llm and not cfg.llm_enabled:
