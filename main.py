@@ -19,6 +19,8 @@ from simulator.ohlc_data import OHLCData
 from simulator.trade_simulator import TradeSimulator
 from brain.config import PRESETS, MEDIUM, QualityConfig
 from brain.health_rules import HealthRules
+from brain.strategy_genome import StrategyMiner
+from brain.tournament import Tournament
 
 
 def parse_args() -> argparse.Namespace:
@@ -49,6 +51,12 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--save-trades",  action="store_true", help="Save trades.csv")
     p.add_argument("--health",       action="store_true", help="Run system health checks (walk-forward, regime coverage)")
     p.add_argument("--free-params",  type=int, default=0, help="Number of free parameters (for health check)")
+
+    # Tournament / strategy mining
+    p.add_argument("--mine",         action="store_true", help="Run walk-forward tournament to find best strategy")
+    p.add_argument("--variants",     type=int, default=50, help="Random strategy variants to generate (default 50)")
+    p.add_argument("--top-k",        type=int, default=10, help="Top-K IS survivors tested on OOS (default 10)")
+    p.add_argument("--is-split",     type=float, default=0.70, help="IS fraction 0-1 (default 0.70)")
     return p.parse_args()
 
 
@@ -122,6 +130,31 @@ def main() -> None:
             n_free_params = args.free_params,
         )
         print(report.summary())
+
+    if args.mine:
+        print(f"\nMining strategies: {args.variants} random + community seeds ...")
+        miner   = StrategyMiner(n_random=args.variants, seed=args.seed)
+        genomes = miner.generate()
+        print(f"  Pool size: {len(genomes)} genomes  "
+              f"(IS={args.is_split*100:.0f}% / OOS={100-args.is_split*100:.0f}%)")
+
+        tourney = Tournament(
+            is_split        = args.is_split,
+            top_k           = args.top_k,
+            initial_capital = args.capital,
+            allow_short     = not args.no_short,
+            verbose         = args.verbose,
+        )
+        t_result = tourney.run(df, genomes)
+        print(t_result.summary())
+
+        if t_result.champion:
+            print("\nChampion parameters:")
+            print(f"  {t_result.champion.genome}")
+            if t_result.challengers:
+                print(f"\nChallengers in standby ({len(t_result.challengers)}):")
+                for i, c in enumerate(t_result.challengers[:5], 2):
+                    print(f"  #{i}  {c.genome}")
 
 
 if __name__ == "__main__":

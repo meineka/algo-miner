@@ -169,12 +169,13 @@ class TradeSimulator:
 
     def __init__(
         self,
-        initial_capital: float          = 10_000.0,
-        commission_pct:  float          = 0.001,
-        allow_short:     bool           = True,
-        take_profit_mult: float         = 2.0,
-        config:          QualityConfig  = DEFAULT,
-        llm_api_key:     Optional[str]  = None,
+        initial_capital:  float          = 10_000.0,
+        commission_pct:   float          = 0.001,
+        allow_short:      bool           = True,
+        take_profit_mult: float          = 2.0,
+        config:           QualityConfig  = DEFAULT,
+        llm_api_key:      Optional[str]  = None,
+        genome           = None,         # optional StrategyGenome — overrides rule params
     ):
         self.initial_capital  = initial_capital
         self.commission_pct   = commission_pct
@@ -183,7 +184,7 @@ class TradeSimulator:
         self._cfg             = config
 
         self._prereqs       = Prerequisites()
-        self._rules         = Rules()
+        self._rules         = Rules(genome=genome)   # genome wires rule parameters
         self._regime_filter = RegimeFilter()
         self._quality = QualityChecks(
             block_counter_trend    = config.block_counter_trend,
@@ -199,7 +200,7 @@ class TradeSimulator:
             min_atr_multiplier     = config.min_atr_multiplier,
             max_risk_pct           = config.max_risk_pct,
             atr_stop_multiplier    = config.atr_stop_multiplier,
-            session_filter         = SessionFilter(),   # London + NY, 15-min blackouts
+            session_filter         = None if config.disable_session_filter else SessionFilter(),
         )
         self._llm: Optional[LLMValidator] = None
         if config.llm_enabled:

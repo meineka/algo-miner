@@ -42,6 +42,10 @@ class QualityConfig:
     llm_enabled:            bool  = False
     llm_min_confidence:     int   = 75
 
+    # Session filter — disable during strategy mining / backtesting on historical data
+    # (session filter is designed for live intraday trading, not batch backtests)
+    disable_session_filter: bool  = False
+
 
 # ──────────────────────────────────────────────────────────────────────
 # STRICT — what we use. No garbage in.

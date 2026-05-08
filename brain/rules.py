@@ -31,12 +31,37 @@ class Rules:
     function can gate itself without re-running ADX.
     """
 
-    def __init__(self):
+    def __init__(self, genome=None):
+        """
+        genome : optional StrategyGenome — when provided, rule parameters
+                 (EMA spans, RSI thresholds, etc.) are taken from the genome
+                 instead of the hard-coded defaults.
+        """
         self._rules: Dict[str, Callable] = {}
-        self.register("ema_crossover")(ema_crossover_rule)
-        self.register("rsi_mean_reversion")(rsi_mean_reversion_rule)
-        self.register("donchian_breakout")(donchian_breakout_rule)
-        self.register("volume_spike")(volume_spike_rule)
+        self._genome = genome
+
+        if genome is not None:
+            import functools
+            self.register("ema_crossover")(
+                functools.partial(ema_crossover_rule,
+                                  fast_span=genome.ema_fast,
+                                  slow_span=genome.ema_slow))
+            self.register("rsi_mean_reversion")(
+                functools.partial(rsi_mean_reversion_rule,
+                                  period=genome.rsi_period,
+                                  oversold=genome.rsi_oversold,
+                                  overbought=genome.rsi_overbought))
+            self.register("donchian_breakout")(
+                functools.partial(donchian_breakout_rule,
+                                  window=genome.donchian_window))
+            self.register("volume_spike")(
+                functools.partial(volume_spike_rule,
+                                  multiplier=genome.vol_spike_mult))
+        else:
+            self.register("ema_crossover")(ema_crossover_rule)
+            self.register("rsi_mean_reversion")(rsi_mean_reversion_rule)
+            self.register("donchian_breakout")(donchian_breakout_rule)
+            self.register("volume_spike")(volume_spike_rule)
 
     def register(self, name: str):
         def decorator(fn: Callable):
@@ -105,15 +130,17 @@ def _sideways_mask(regimes, index: pd.Index, max_adx: float = 25.0) -> pd.Series
 
 def ema_crossover_rule(
     df: pd.DataFrame,
-    regimes: Optional[List] = None,
+    regimes:   Optional[List] = None,
+    fast_span: int = 9,
+    slow_span: int = 21,
 ) -> pd.Series:
     """
     Fast/slow EMA crossover.
     Active only in trending regimes (ADX >= 20) — fires HOLD in sideways markets
     where crossovers produce whipsaws.
     """
-    fast = df["close"].ewm(span=9,  adjust=False).mean()
-    slow = df["close"].ewm(span=21, adjust=False).mean()
+    fast = df["close"].ewm(span=fast_span, adjust=False).mean()
+    slow = df["close"].ewm(span=slow_span, adjust=False).mean()
     diff = fast - slow
 
     signal = pd.Series(SIGNAL_HOLD, index=df.index, dtype=int)
@@ -130,8 +157,10 @@ def ema_crossover_rule(
 
 def rsi_mean_reversion_rule(
     df: pd.DataFrame,
-    regimes: Optional[List] = None,
-    period: int = 14,
+    regimes:    Optional[List] = None,
+    period:     int = 14,
+    oversold:   int = 30,
+    overbought: int = 70,
 ) -> pd.Series:
     """
     Oversold/Overbought RSI reversion.
@@ -145,8 +174,8 @@ def rsi_mean_reversion_rule(
     rsi   = 100 - 100 / (1 + rs)
 
     signal = pd.Series(SIGNAL_HOLD, index=df.index, dtype=int)
-    signal[rsi < 30] = SIGNAL_BUY
-    signal[rsi > 70] = SIGNAL_SELL
+    signal[rsi < oversold]   = SIGNAL_BUY
+    signal[rsi > overbought] = SIGNAL_SELL
 
     # Silence in strong trends — RSI mean-reversion fails there
     if regimes is not None:
@@ -159,7 +188,7 @@ def rsi_mean_reversion_rule(
 def donchian_breakout_rule(
     df: pd.DataFrame,
     regimes: Optional[List] = None,
-    window: int = 20,
+    window:  int = 20,
 ) -> pd.Series:
     """
     Donchian channel breakout with volume confirmation.
@@ -186,7 +215,7 @@ def donchian_breakout_rule(
 
 def volume_spike_rule(
     df: pd.DataFrame,
-    regimes: Optional[List] = None,
+    regimes:    Optional[List] = None,
     multiplier: float = 2.0,
 ) -> pd.Series:
     """
