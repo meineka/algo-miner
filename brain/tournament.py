@@ -132,6 +132,7 @@ class Tournament:
         allow_short:     bool  = True,
         min_trades:      int   = 5,
         verbose:         bool  = False,
+        style:           str   = "classic",
     ):
         self.is_split        = is_split
         self.top_k           = top_k
@@ -140,6 +141,7 @@ class Tournament:
         self.allow_short     = allow_short
         self.min_trades      = min_trades
         self.verbose         = verbose
+        self.style           = style
         self._health         = HealthRules(min_trades_metrics=self.min_trades)
 
     # ------------------------------------------------------------------ #
@@ -218,6 +220,7 @@ class Tournament:
             take_profit_mult = genome.take_profit_mult,
             config           = cfg,
             genome           = genome,
+            style            = self.style,
         )
         try:
             result = sim.run(df)

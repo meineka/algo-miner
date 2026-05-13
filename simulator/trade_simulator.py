@@ -176,6 +176,7 @@ class TradeSimulator:
         config:           QualityConfig  = DEFAULT,
         llm_api_key:      Optional[str]  = None,
         genome           = None,         # optional StrategyGenome — overrides rule params
+        style:            str            = "classic",  # 'classic' | 'aziz' | 'hybrid'
     ):
         self.initial_capital  = initial_capital
         self.commission_pct   = commission_pct
@@ -183,8 +184,11 @@ class TradeSimulator:
         self.take_profit_mult = take_profit_mult
         self._cfg             = config
 
+        # If the genome itself carries a style, prefer it (set by the miner)
+        effective_style = getattr(genome, "style", style) if genome is not None else style
+
         self._prereqs       = Prerequisites()
-        self._rules         = Rules(genome=genome)   # genome wires rule parameters
+        self._rules         = Rules(genome=genome, style=effective_style)
         self._regime_filter = RegimeFilter()
         self._quality = QualityChecks(
             block_counter_trend    = config.block_counter_trend,

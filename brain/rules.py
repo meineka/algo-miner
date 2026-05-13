@@ -31,17 +31,29 @@ class Rules:
     function can gate itself without re-running ADX.
     """
 
-    def __init__(self, genome=None):
+    def __init__(self, genome=None, style: str = "classic"):
         """
         genome : optional StrategyGenome — when provided, rule parameters
                  (EMA spans, RSI thresholds, etc.) are taken from the genome
                  instead of the hard-coded defaults.
+        style  : 'classic'  — the original 4 regime-aware rules
+                 'aziz'     — the 6 Andrew-Aziz day-trading strategies
+                 'hybrid'   — both rule sets combined (10 rules)
         """
         self._rules: Dict[str, Callable] = {}
         self._genome = genome
+        self._style  = style
 
+        if style in ("classic", "hybrid"):
+            self._register_classic(genome)
+        if style in ("aziz", "hybrid"):
+            self._register_aziz(genome)
+        if not self._rules:
+            raise ValueError(f"Unknown style '{style}' (expected 'classic'|'aziz'|'hybrid')")
+
+    def _register_classic(self, genome) -> None:
+        import functools
         if genome is not None:
-            import functools
             self.register("ema_crossover")(
                 functools.partial(ema_crossover_rule,
                                   fast_span=genome.ema_fast,
@@ -62,6 +74,51 @@ class Rules:
             self.register("rsi_mean_reversion")(rsi_mean_reversion_rule)
             self.register("donchian_breakout")(donchian_breakout_rule)
             self.register("volume_spike")(volume_spike_rule)
+
+    def _register_aziz(self, genome) -> None:
+        import functools
+        from .aziz_rules import (
+            AZIZ_RULES,
+            opening_range_breakout_rule,
+            bull_flag_rule,
+            ma_trend_pullback_rule,
+            red_to_green_rule,
+        )
+
+        # Pull Aziz-tunable knobs off the genome when present; fall back to
+        # the function defaults otherwise.
+        def g(attr, default):
+            return getattr(genome, attr, default) if genome is not None else default
+
+        overrides = {
+            "opening_range_breakout": functools.partial(
+                opening_range_breakout_rule,
+                window_bars        = g("orb_window_bars", 15),
+                volume_mult        = g("orb_volume_mult", 1.3),
+                session_max_minute = g("orb_session_max_min", 180),
+            ),
+            "bull_flag": functools.partial(
+                bull_flag_rule,
+                pole_bars    = g("flag_pole_bars", 5),
+                flag_bars    = g("flag_consol_bars", 3),
+                pole_min_pct = g("flag_pole_min_pct", 0.004),
+                retrace_max  = g("flag_retrace_max", 0.50),
+                volume_mult  = g("flag_volume_mult", 1.5),
+            ),
+            "ma_trend_pullback": functools.partial(
+                ma_trend_pullback_rule,
+                fast_span    = g("ma_fast_span", 9),
+                slow_span    = g("ma_slow_span", 20),
+                pullback_pct = g("ma_pullback_pct", 0.003),
+            ),
+            "red_to_green": functools.partial(
+                red_to_green_rule,
+                session_max_minute = g("rtg_session_max_min", 180),
+                volume_mult        = g("rtg_volume_mult", 1.3),
+            ),
+        }
+        for name, fn in AZIZ_RULES:
+            self.register(name)(overrides.get(name, fn))
 
     def register(self, name: str):
         def decorator(fn: Callable):

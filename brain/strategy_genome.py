@@ -47,6 +47,61 @@ PARAM_SPACE: Dict[str, Any] = {
     "cooldown_bars":      {"type": "int",   "low": 1,    "high": 5},
 }
 
+# Aziz-specific knobs — only sampled when StrategyMiner runs in 'aziz' or
+# 'hybrid' style.  Defaults match Aziz / Bear Bull Traders teaching.
+AZIZ_PARAM_SPACE: Dict[str, Any] = {
+    "orb_window_bars":      {"type": "int",   "low": 5,     "high": 30},
+    "orb_volume_mult":      {"type": "float", "low": 1.1,   "high": 2.0},
+    "orb_session_max_min":  {"type": "int",   "low": 60,    "high": 240},
+    "flag_pole_bars":       {"type": "int",   "low": 3,     "high": 8},
+    "flag_consol_bars":     {"type": "int",   "low": 2,     "high": 6},
+    "flag_pole_min_pct":    {"type": "float", "low": 0.002, "high": 0.010},
+    "flag_retrace_max":     {"type": "float", "low": 0.30,  "high": 0.60},
+    "flag_volume_mult":     {"type": "float", "low": 1.2,   "high": 2.5},
+    "ma_fast_span":         {"type": "int",   "low": 5,     "high": 12},
+    "ma_slow_span":         {"type": "int",   "low": 15,    "high": 30},
+    "ma_pullback_pct":      {"type": "float", "low": 0.001, "high": 0.008},
+    "rtg_session_max_min":  {"type": "int",   "low": 60,    "high": 240},
+    "rtg_volume_mult":      {"type": "float", "low": 1.1,   "high": 2.0},
+}
+
+# Aziz / Bear Bull Traders seed configurations.  These embed Aziz's book
+# defaults: 1 % risk, 2 % daily loss, 3-strike cooldown, 9/20 EMA, ORB on
+# the first 5–15 bars.  Used when StrategyMiner runs in style='aziz'.
+AZIZ_SEEDS: List[Dict[str, Any]] = [
+    # Classic Aziz: 9/20 EMA, 15-min ORB, tight 1 % risk
+    dict(ema_fast=9,  ema_slow=20, rsi_period=14, rsi_oversold=30, rsi_overbought=70,
+         donchian_window=20, vol_spike_mult=2.0, min_agreement=2,
+         atr_stop_mult=1.5, take_profit_mult=2.0, max_risk_pct=0.010,
+         max_daily_loss_pct=0.020, cooldown_bars=5,
+         orb_window_bars=15, orb_volume_mult=1.3, orb_session_max_min=180,
+         flag_pole_bars=5, flag_consol_bars=3, flag_pole_min_pct=0.004,
+         flag_retrace_max=0.50, flag_volume_mult=1.5,
+         ma_fast_span=9, ma_slow_span=20, ma_pullback_pct=0.003,
+         rtg_session_max_min=180, rtg_volume_mult=1.3),
+    # 5-min ORB scalper, faster MA
+    dict(ema_fast=8,  ema_slow=21, rsi_period=14, rsi_oversold=30, rsi_overbought=70,
+         donchian_window=20, vol_spike_mult=2.0, min_agreement=2,
+         atr_stop_mult=1.2, take_profit_mult=2.0, max_risk_pct=0.010,
+         max_daily_loss_pct=0.020, cooldown_bars=3,
+         orb_window_bars=5, orb_volume_mult=1.4, orb_session_max_min=120,
+         flag_pole_bars=4, flag_consol_bars=2, flag_pole_min_pct=0.003,
+         flag_retrace_max=0.40, flag_volume_mult=1.5,
+         ma_fast_span=8,  ma_slow_span=21, ma_pullback_pct=0.002,
+         rtg_session_max_min=120, rtg_volume_mult=1.4),
+    # Conservative 30-min ORB w/ 2:1 R:R, only the strongest confluence
+    dict(ema_fast=9,  ema_slow=20, rsi_period=14, rsi_oversold=30, rsi_overbought=70,
+         donchian_window=20, vol_spike_mult=2.0, min_agreement=3,
+         atr_stop_mult=2.0, take_profit_mult=2.5, max_risk_pct=0.0075,
+         max_daily_loss_pct=0.015, cooldown_bars=8,
+         orb_window_bars=30, orb_volume_mult=1.5, orb_session_max_min=180,
+         flag_pole_bars=6, flag_consol_bars=4, flag_pole_min_pct=0.005,
+         flag_retrace_max=0.50, flag_volume_mult=1.8,
+         ma_fast_span=9,  ma_slow_span=20, ma_pullback_pct=0.004,
+         rtg_session_max_min=180, rtg_volume_mult=1.5),
+]
+
+
 # Hand-seeded "community classics" — always included in the pool
 COMMUNITY_SEEDS: List[Dict[str, Any]] = [
     # Classic EMA 9/21 + standard RSI
@@ -97,8 +152,23 @@ class StrategyGenome:
     max_risk_pct:       float
     max_daily_loss_pct: float
     cooldown_bars:      int
-    name:               str = ""
-    source:             str = "random"   # 'community' | 'random' | 'llm'
+    # Aziz-specific knobs — optional so existing genomes stay valid
+    orb_window_bars:      int   = 15
+    orb_volume_mult:      float = 1.3
+    orb_session_max_min:  int   = 180
+    flag_pole_bars:       int   = 5
+    flag_consol_bars:     int   = 3
+    flag_pole_min_pct:    float = 0.004
+    flag_retrace_max:     float = 0.50
+    flag_volume_mult:     float = 1.5
+    ma_fast_span:         int   = 9
+    ma_slow_span:         int   = 20
+    ma_pullback_pct:      float = 0.003
+    rtg_session_max_min:  int   = 180
+    rtg_volume_mult:      float = 1.3
+    style:                str   = "classic"   # 'classic' | 'aziz' | 'hybrid'
+    name:                 str   = ""
+    source:               str   = "random"    # 'community' | 'random' | 'llm'
 
     def __post_init__(self):
         # Enforce constraint: fast EMA must be < slow EMA
@@ -107,6 +177,9 @@ class StrategyGenome:
         # RSI: oversold < overbought
         if self.rsi_oversold >= self.rsi_overbought:
             self.rsi_overbought = min(self.rsi_oversold + 20, 80)
+        # Same constraint for Aziz MA pair
+        if self.ma_fast_span >= self.ma_slow_span:
+            self.ma_slow_span = self.ma_fast_span + 5
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
@@ -146,20 +219,29 @@ class StrategyMiner:
         n_random:   int  = 50,
         seed:       int  = 42,
         llm_client  = None,
+        style:      str  = "classic",  # 'classic' | 'aziz' | 'hybrid'
     ):
         self.n_random   = n_random
         self._rng       = random.Random(seed)
         self._np_rng    = np.random.default_rng(seed)
         self._llm       = llm_client
+        self._style     = style
 
     def generate(self) -> List[StrategyGenome]:
         """Return full pool: community seeds + random variants + optional LLM variants."""
         pool: List[StrategyGenome] = []
 
-        # 1. Community seeds
-        for i, params in enumerate(COMMUNITY_SEEDS):
-            g = StrategyGenome(**params, name=f"community_{i+1}", source="community")
-            pool.append(g)
+        # 1. Community / Aziz seeds (depending on style)
+        if self._style in ("classic", "hybrid"):
+            for i, params in enumerate(COMMUNITY_SEEDS):
+                g = StrategyGenome(**params, style=self._style,
+                                   name=f"community_{i+1}", source="community")
+                pool.append(g)
+        if self._style in ("aziz", "hybrid"):
+            for i, params in enumerate(AZIZ_SEEDS):
+                g = StrategyGenome(**params, style=self._style,
+                                   name=f"aziz_{i+1}", source="community")
+                pool.append(g)
 
         # 2. Random variants
         for i in range(self.n_random):
@@ -175,14 +257,18 @@ class StrategyMiner:
 
     def _random_genome(self, name: str = "") -> StrategyGenome:
         params: Dict[str, Any] = {}
-        for key, spec in PARAM_SPACE.items():
+        space = dict(PARAM_SPACE)
+        if self._style in ("aziz", "hybrid"):
+            space.update(AZIZ_PARAM_SPACE)
+        for key, spec in space.items():
             if spec["type"] == "int":
                 params[key] = self._rng.randint(spec["low"], spec["high"])
             else:
                 params[key] = round(
                     self._rng.uniform(spec["low"], spec["high"]), 3
                 )
-        return StrategyGenome(**params, name=name, source="random")
+        return StrategyGenome(**params, style=self._style,
+                              name=name, source="random")
 
     def _llm_generate(self, n: int = 5) -> List[StrategyGenome]:
         """Ask Claude to suggest n strategy configurations based on trading knowledge."""
