@@ -1,0 +1,316 @@
+# tactiq.io free youtube transcript
+# [2026] MOST Important Day Trading Strategy & Tools
+# https://www.youtube.com/watch/z11htAM05q0
+
+00:00:00.360 All right, guys. Hello, everybody. Thank
+00:00:02.720 you for watching this recap. It was a
+00:00:05.040 great trading day that we had and we
+00:00:07.200 still do.
+00:00:08.920 Uh let me put this one here. And um
+00:00:12.400 the opening was a little bit difficult,
+00:00:14.480 but you really we got some in the in the
+00:00:17.080 after you know later in the session
+00:00:18.720 after 10:00 we got some really really
+00:00:20.360 nice with the help of I think most
+00:00:23.080 important trading tool that you have
+00:00:26.120 Market Atlas. And we have a joke about
+00:00:28.080 it that Market Atlas never lies and the
+00:00:30.600 reason for that is I'm going to actually
+00:00:32.520 show it to you why.
+00:00:34.000 So, right now we are seeing it's you
+00:00:35.440 know a lot of people say okay, how does
+00:00:36.760 Market Atlas works? It's really simple.
+00:00:38.560 Market Atlas is essentially the level
+00:00:40.320 two that you're seeing on DAS right now.
+00:00:43.040 And you know, these are the you know,
+00:00:44.960 the depth of the market, but it just
+00:00:47.240 have a time axis. So, we just do the
+00:00:49.240 historical time axis in there and you
+00:00:51.840 can see these orders when they came when
+00:00:53.720 they left and then when they're coming
+00:00:55.080 and then you can zoom out a little bit.
+00:00:56.760 DAS doesn't give you the access of
+00:00:58.000 zooming out, but you know, we get the
+00:00:59.880 zoom out here. That's right now as you
+00:01:02.160 see the price of Nvidia is at 201.25. We
+00:01:05.640 have some big orders at 202, 203, 204.
+00:01:09.040 And we don't have significant amount of
+00:01:10.880 orders to the downside. When there is a
+00:01:12.440 huge imbalance between these two, you
+00:01:14.840 can safely say that the price has a you
+00:01:16.920 know, tendency to go toward those
+00:01:18.680 liquidity pools. So, I'm going to I have
+00:01:21.120 a lot So, right now if I zoom out, so
+00:01:23.440 there's a really significant order
+00:01:24.920 toward to 205. And the question is that
+00:01:28.800 is there any significant amount of this
+00:01:30.320 is like 430,000 shares. Is this 430,000
+00:01:34.200 shares something down here as well or
+00:01:35.760 not? So, and this is the bid and ask
+00:01:37.120 that is currently trading. So, because
+00:01:39.080 there is a huge imbalance, there is a
+00:01:40.640 lot here and there's not much here. This
+00:01:43.480 is a bullish book, but that doesn't
+00:01:45.320 necessarily means that it actually goes
+00:01:47.840 toward that 205. So, what what what is
+00:01:50.440 important what what is very important is
+00:01:51.800 looking at the price action. And what
+00:01:53.240 are you doing in the price action? Are
+00:01:55.560 you above the VWAP or below the VWAP?
+00:01:58.040 So, it's very important to trade the
+00:01:59.640 long if you're above the VWAP. If you
+00:02:02.560 don't for example, you see any signal at
+00:02:04.280 the open, you know, and you go long and
+00:02:06.760 it drops below the VWAP, you have to get
+00:02:08.520 a stopped out. And that's exactly what
+00:02:09.880 happened in my first trade here. So, I
+00:02:11.960 went long and then you know, I wanted to
+00:02:14.200 get the breakout because we had this
+00:02:15.480 order toward 205, 204, but I did get
+00:02:18.320 stopped out because you know, I lost the
+00:02:20.280 VWAP. So, if I show you one minute
+00:02:21.920 candlestick,
+00:02:23.600 so here's the one minute candlestick.
+00:02:25.160 So, you know, open week came up and I
+00:02:27.680 said okay, this is going to go really
+00:02:29.040 squeeze above for one minute to minute
+00:02:30.640 break out. I went long, but it dropped
+00:02:32.240 and got a stopped out. And it did go red
+00:02:34.840 all the way and now it just came back
+00:02:36.680 up. And after it came back up and I saw
+00:02:39.840 that the market is gaining momentum, I
+00:02:41.680 went long. I added more and you know,
+00:02:43.920 the orders were still showing up to the
+00:02:45.720 upside and then I decided to stay in
+00:02:47.360 this trade. So, and this is a very very
+00:02:49.520 nice interesting trade that we could
+00:02:51.600 make the losses back. Same trade we did
+00:02:53.800 with PLTR.
+00:02:55.320 PLTR was also another very interesting
+00:02:57.040 trade that I have a screenshot that I'm
+00:02:58.240 going to show you.
+00:02:59.560 PLTR we traded yesterday and it was a
+00:03:01.960 really nice and then today was ready to
+00:03:03.680 break to about 150 and go higher on a
+00:03:06.280 daily chart. So, when we looked into the
+00:03:08.480 trade, again at the opening closes as a
+00:03:11.440 doji in the first one minute. That was a
+00:03:13.480 that would have been a sign that maybe I
+00:03:15.120 would have you know, not trading it
+00:03:16.480 because the dojis are usually not good.
+00:03:18.400 But anyways, I went long because we had
+00:03:20.360 this big order at 150. I have a
+00:03:21.840 screenshot that I'm going to show it to
+00:03:22.920 you, but it did drop really bad and got
+00:03:24.880 a stopped out. As soon as it came back
+00:03:26.640 up and I saw that the orders at 150 is
+00:03:28.760 still there, I went long. I added more
+00:03:31.120 and this was a really interesting trade
+00:03:32.680 because I really added couple of times
+00:03:34.520 in there because the order was still up
+00:03:36.120 there at 150 and I stayed in trade for a
+00:03:39.200 very long time. As you see here, the
+00:03:41.280 breakout happened and we went all the
+00:03:43.120 way up to 152. And I want to show you
+00:03:45.480 the screenshots that we have. The same
+00:03:46.800 trade on AMD.
+00:03:48.720 So, same trade on AMD. Again at the at
+00:03:50.360 the open, I went long because we had the
+00:03:51.960 order at 293, 295 and all the way to
+00:03:55.040 300, but I got a stopped out. Came back
+00:03:57.680 up and I went long again. And let's see
+00:03:59.840 what AMD is having right now. So, if I
+00:04:02.120 zoom out on AMD,
+00:04:04.600 again it doesn't show much here because
+00:04:06.200 there's some 293, 294, but still the 300
+00:04:08.880 I think it should be a good order up
+00:04:10.480 there.
+00:04:11.480 Um there you go. So, you can see the
+00:04:12.880 300s at you know, 155,000 shares at 300
+00:04:16.519 stacking up there. But that doesn't
+00:04:17.880 necessarily mean go there. You have to
+00:04:19.760 look at the price action. So,
+00:04:21.798 again I went long at 291 all the way up
+00:04:23.680 to 296. So, we made the losses at the
+00:04:25.520 open back. But I want to show you now a
+00:04:28.560 couple of screenshots to show you you
+00:04:30.720 know, it's easy to look at the charts
+00:04:32.480 now when the trade actually happened.
+00:04:34.720 But show me that when you were making
+00:04:36.720 the decision. So, here it is.
+00:04:39.000 So, this is my chart and um
+00:04:41.720 you see this is a PLTR. The most
+00:04:43.280 important thing that you have to look at
+00:04:44.440 this chart is the time.
+00:04:46.360 So, at 9:31, so I set this big order at
+00:04:49.520 the 150 and even though the candlestick
+00:04:52.320 was a doji, I decided to take that trade
+00:04:54.320 for one minute opening range breakout.
+00:04:55.560 But maybe that would have been a sign
+00:04:56.880 for me to wait a little bit because
+00:04:58.120 these dojis are not really good. So, I
+00:05:00.200 saw the order at 150 and I went long. In
+00:05:03.080 that time it was up 2% and I thought
+00:05:04.800 okay, maybe this is a good trade to to
+00:05:06.760 take that.
+00:05:07.760 And then here
+00:05:09.320 I got a stopped out, but it came back up
+00:05:11.840 above the VWAP and I saw that the order
+00:05:13.800 at 150 is still there. So, since the
+00:05:16.440 order was still there, I decided to take
+00:05:18.320 the trade long at 149. I added because I
+00:05:20.960 was now certain that this is going to go
+00:05:22.880 toward 150. And again, look at the
+00:05:25.200 timestamp is very important here if you
+00:05:26.920 want to get an idea what's happening
+00:05:28.640 here. 9:45 I added more. Still the order
+00:05:31.680 is at 150. So, five minutes later this
+00:05:33.840 order is still ready and you see the the
+00:05:35.720 value of the orders is actually adding
+00:05:37.600 in there too. So, you know, the color is
+00:05:39.560 changing means that the number of the
+00:05:41.360 shares are changing. At 9:47 two minutes
+00:05:44.240 later we continue going push toward it
+00:05:46.160 and it's still the order 70,000 shares
+00:05:47.800 is in there. The orders are you know,
+00:05:49.480 adding or removing, but it's still
+00:05:50.800 significantly higher as the orders
+00:05:53.080 below. So, it goes toward the liquidity.
+00:05:55.669 >> [clears throat]
+00:05:57.080 >> Uh and you know, 9:59 I'm still in
+00:06:00.720 there. I added more and it's still the
+00:06:02.400 order at 150 is there. And again, go
+00:06:04.680 back a little bit down here at 9:59 you
+00:06:07.520 see the order 67,000 and it's completely
+00:06:10.320 the bigger than the orders downside. So,
+00:06:12.360 it's completely dwarfed compared to the
+00:06:15.240 other orders that we're having.
+00:06:17.120 Uh and the last 10:14 there you go. This
+00:06:19.480 is the moment that we broke out toward
+00:06:20.880 151. And do you see how time and the
+00:06:24.400 orders are actually now moving up toward
+00:06:26.600 the higher prices at 151. Uh let me show
+00:06:29.960 you should be very clear that you know,
+00:06:31.480 you're going toward that. And that would
+00:06:32.560 have been a sign for me maybe to add on
+00:06:34.120 it, but I already had a very big
+00:06:35.840 position on PLTR here and I didn't need
+00:06:38.040 to add on that. And the see the order at
+00:06:40.200 151, they took it out. So, do you see
+00:06:42.360 this order is gone now? Because that was
+00:06:44.920 the transaction happened. The volume at
+00:06:46.680 151 is obviously that it happened. So,
+00:06:49.120 this order was not fake. It actually was
+00:06:51.240 taken out. And now you know, you have to
+00:06:53.960 see if there's order to the upside or
+00:06:55.520 not. As of now, I don't see anything
+00:06:57.520 here because you know, there's some big
+00:06:58.680 order here, but there's not something
+00:07:00.200 significant, but you need to zoom out a
+00:07:02.320 little bit because now the market has
+00:07:03.680 all orders changed. If you zoom out, you
+00:07:06.160 see that 152
+00:07:08.080 you know, you really goes
+00:07:11.000 toward 152.
+00:07:12.720 Um
+00:07:13.680 Now the same trade on AMD. I want to
+00:07:15.200 take some screenshots and then this is
+00:07:16.480 my second trade on AMD. So, at the open
+00:07:19.000 you know, I had this big order at 295.
+00:07:21.240 That's why I went long. I got a stopped
+00:07:22.720 out. This is the first trade. But as
+00:07:24.440 soon as it came back up at 291, I see
+00:07:26.160 really came above the VWAP. It closed
+00:07:27.920 above the VWAP very strong. Okay, so do
+00:07:30.720 we have the order at Market Atlas? Yes,
+00:07:32.240 295. And then you know, you just go
+00:07:34.840 long. And I was ready to add a little
+00:07:37.280 bit more here because you know, I didn't
+00:07:38.560 extend from the VWAP. I was adding to
+00:07:40.160 you if it pulls back, I was ready to add
+00:07:41.960 and then put a stop loss at around 289.
+00:07:44.000 But you know, I was lucky because or
+00:07:45.680 lucky and unlucky because I didn't get
+00:07:47.440 to add more. But you know, as you see it
+00:07:49.320 just ripped higher. As soon as it ripped
+00:07:50.720 higher and the order is still up there
+00:07:52.120 at 295, I decided that okay, maybe this
+00:07:54.880 is the time to maybe this is the time to
+00:07:57.160 add on it at 292. And then the orders
+00:07:59.080 293 and 295 are the orders that is up
+00:08:01.920 there.
+00:08:02.960 Let's see what else do we have. Boom.
+00:08:04.480 So, I partial at 293 and then again as
+00:08:06.680 you see the order is very very clear.
+00:08:08.320 It's very
+00:08:09.520 really really simple to
+00:08:11.880 find these
+00:08:13.040 trades and
+00:08:14.560 read this level two. And again, this is
+00:08:16.160 a expensive market data that we're
+00:08:17.880 getting directly from NASDAQ and it's
+00:08:20.440 not free. You have to pay for it
+00:08:22.160 unfortunately. Not only for the service
+00:08:24.240 that we provide, but also for the
+00:08:26.080 service that NASDAQ is providing to us.
+00:08:28.640 They expect us to pay $20 per month per
+00:08:31.400 person for anyone who's using this. So,
+00:08:33.760 from the $99 per month that you have to
+00:08:35.559 pay for Market Atlas, actually $20 of
+00:08:37.799 that goes to NASDAQ and the rest it
+00:08:39.840 stays for us and our technology and our
+00:08:41.520 servers and everything.
+00:08:44.005 >> [clears throat]
+00:08:44.680 >> And again, these are very simple, but
+00:08:46.760 not easy. The difficult part is how to
+00:08:49.720 process this information that you're
+00:08:51.400 having and put it next to the price
+00:08:53.680 action. And when to take the trade is
+00:08:56.160 the hard part. Again, the concept is
+00:08:58.800 really simple, but not easy to execute.
+00:09:01.280 And the difficult part is first of all
+00:09:03.040 to recognize when the orders are
+00:09:04.680 meaningful, so they're significant, and
+00:09:07.760 when the price action confirms getting
+00:09:10.120 in there. You know, that big order at
+00:09:12.080 295 was probably available during this
+00:09:14.520 time as well, but I stayed away from AMD
+00:09:16.680 because a choppiness below the VWAP is
+00:09:19.760 not a place for me to get in there. But
+00:09:21.720 as soon as I get the confirmation that
+00:09:23.320 we closed above the VWAP and it's very
+00:09:25.280 strong, that is the moment that I went
+00:09:27.440 long. I was hoping to get a pullback
+00:09:29.160 here to add, but I didn't get the
+00:09:30.920 pullback and I added on the way up. As
+00:09:32.760 you see here, it was a really massive
+00:09:34.520 nice move up. And last I screenshot that
+00:09:37.040 I have to you is that is the 295. When
+00:09:39.240 we took the 295 out and now the orders
+00:09:42.000 that we're having is at 300. So, the
+00:09:44.600 question is are we going to get to 300
+00:09:46.480 or not? So, the price action tells me
+00:09:48.920 that it might get to 300, but you should
+00:09:51.640 expect a consolidation because we're
+00:09:53.440 significantly above the VWAP. A volume
+00:09:55.680 weighted average price is the most
+00:09:58.200 important indicator on your chart. And
+00:10:00.960 the tool that I think the most important
+00:10:02.480 tool is the market atlas that I think
+00:10:04.480 every person must have it if your style
+00:10:07.440 of trading is a scalping. If you're not
+00:10:09.840 a scalper or if you're trading penny
+00:10:11.720 stocks, probably market atlas is just a
+00:10:13.800 waste of money for you. So, that was my
+00:10:16.440 recap and if you have any question guys,
+00:10:18.640 just leave it in the comment and you
+00:10:20.720 know we have so much information about
+00:10:22.320 how to use market atlas and how to scalp
+00:10:24.600 based on market atlas.
+00:10:26.800 Andrew Aziz, if you have any question,
+00:10:28.960 email me andrew@thebubbletraders.com and
+00:10:30.800 all this information available in our
+00:10:32.360 YouTube. And if you want to see this a
+00:10:34.560 screen live,
+00:10:36.360 you can come to chat room and trade with
+00:10:38.480 us.

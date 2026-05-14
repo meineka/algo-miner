@@ -399,3 +399,106 @@ folder. Named for their creator (e.g. "NyQuil").
 - 2025/2026 Zarattini × Aziz academic paper
 - Aziz's hotkey script for the scale-out 25/50/100 % buttons
 - Robert's psychology-module video list (referenced multiple times)
+
+---
+
+### 2026-05-14 — Second mass ingest: Market Atlas + Bear-Market 2025
+
+User supplied 4 more Tactiq raw transcripts (~1 100 lines). Saved
+verbatim to `transcripts/raw/`:
+
+| Video ID | Title |
+|---|---|
+| `z11htAM05q0` | [2026] MOST Important Day Trading Strategy & Tools |
+| `JNP5ehsTQ6A` | One Scalping Strategy That Works Everyday |
+| `aQmeUOhopAs` | Live DAY Trading $17,636: Must-Have Trading Tool |
+| `yfOlLmxUR6k` | Day Trading in a Bear Market [2025 Tariff War] |
+
+#### Market Atlas — Aziz's flagship tool (NEW)
+
+> *"The most important day trading tool you need."*
+
+- Built by Aziz / Trading Terminal **in partnership with NASDAQ**
+- Available at **tradingterminal.com**
+- **$99/month**; $20 of that flows to NASDAQ for TotalView data feed
+- *"TotalView is the only depth-of-market feed actually from NASDAQ.
+  Everything else that calls itself depth-of-market is not."*
+- **What it is:** Level 2 with a **time axis** — historical view of
+  bid/ask stacks over time, NOT a snapshot
+- DAS Trader can show level 2 but cannot zoom out or show history;
+  Market Atlas adds those two features
+- Aziz quote: *"I don't really look at level 2 anymore — I'm looking
+  at Market Atlas which is the same thing but with the time axis."*
+
+##### Reading rule (verbatim)
+> *"When there is a huge imbalance between the bid stack and the ask
+> stack, you can safely say the price has a tendency to go toward
+> those liquidity pools."*
+
+##### Confluence with VWAP (the gate)
+1. Find a significant liquidity pool above or below current price
+2. Confirm direction with VWAP — long only if price is **above VWAP**;
+   short only if **below VWAP**
+3. Enter at level reclaim/loss, with stop on the other side of VWAP
+4. Target = the next liquidity pool in trade direction
+
+##### Worked Market Atlas examples (April–May 2026)
+- **NVDA at 201.25:** big stack at 202–205, none below → bullish book.
+  Aziz went long, scaled to 205.
+- **PLTR at 149:** 70 k-share order parked at 150 for 30 minutes.
+  Each timestamp screenshot (9:31, 9:45, 9:47, 9:59, 10:14) showed
+  the order still defending → price ground higher to 152.
+- **AMD at 291** (gap-down 7 %): 22 k stack at 318, ladder up through
+  320/325/328 → ORB long, scaled 293→295→296→327→328.
+- **TSLA red-to-green:** 378 → 382 with big order at 380 acting as
+  magnet; partial at 382, stop to break-even, never quite tagged 383.
+
+##### Aziz's caveat (verbatim)
+> *"Market Atlas is just a waste of money if you trade penny stocks
+> or if you're not a scalper. It only works at meaningful levels for
+> high-volume tickers."*
+
+#### Bear-Market 2025 (Tariff War) — Aziz's public confession
+
+Aziz publicly admitted (video `yfOlLmxUR6k`):
+
+- **$2 million realized loss** on leveraged ETFs (SPXL, TQQQ, TNA)
+  during the April-2025 Trump-2nd-term tariff war
+- *"Three days of volatility wiped out almost two years of trading profit."*
+- Cause: ego trading, no risk-management plan, "feeling invincible"
+- Same pattern repeated from his 2021/2022 mistake — *"I'm not good
+  at swinging leveraged products."*
+- Action: **closed all leveraged positions**, switched to plain
+  **VOO** (S&P 500) for non-leveraged portfolio
+- New community focus: smaller share sizes, R:R discipline,
+  education-first
+- Quote: *"This is the third bear market I'm trading — pandemic
+  (2020), inflation/rate-hike (2022), tariff war (2025). Each one
+  unique."*
+
+This confession is **important for the algo-miner risk-management
+calibration**: even Aziz with his discipline and ~$10 M account
+size blew $2 M when ego overrode rules. The 1 % / 6 % rules exist
+specifically to prevent this kind of blow-up.
+
+#### Updated tool stack (2026)
+- Broker: **Interactive Brokers** (unchanged)
+- Platform: **DAS Trader Pro** (unchanged)
+- **NEW: Market Atlas** as level-2 replacement
+- Live trading: BBT chat-room (Aziz screens shared in real-time)
+- Sim: DAS sim, $50 000 funded sim challenge via Trading Terminal
+  (must trade profitably for 3 months → real funded account)
+
+#### Daily routine — refined
+> *"Wake up 5 minutes before the open."*
+
+That's it. Aziz no longer does 8:30 a.m. premarket prep on his
+livestreams (the BBT mentors Carlos + Norma still do).
+
+#### Open follow-ups (updated again)
+- Performance attribution: which Aziz strategy contributes most $$
+  after the rotation to Market Atlas-first scalping
+- Exact NASDAQ TotalView API rate limits + feed cost structure
+- Whether Aziz publishes the Market Atlas tool description publicly
+  (so we could approximate it from Yahoo / Polygon / Alpaca feeds)
+- 2025/2026 Zarattini × Aziz SSRN paper update
