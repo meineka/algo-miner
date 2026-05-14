@@ -1,212 +1,106 @@
-# algo-miner — Project Brief for Claude
+# aziz-brain — Project Brief for Claude
 
 ## What this project is
 
-An algorithmic trading brain with a bar-by-bar backtester, 7-layer quality gate,
-walk-forward strategy tournament, and integrity verification tests.
-Owner: @meineka (GitHub).  Language: Python 3.11+.
+A standalone algorithmic day-trading engine built around Andrew Aziz's
+strategies (How to Day Trade for a Living, Advanced Techniques in Day
+Trading, Bear Bull Traders curriculum).
 
----
+Owner: @meineka. Language: Python 3.11+.
+
+Originated as branch `aziz-brain` of `meineka/algo-miner`. To extract
+into its own GitHub repo, see the recipe at the bottom of README.md.
 
 ## Directory layout
 
 ```
-algo-miner/
+aziz-brain/
 ├── brain/
-│   ├── config.py           # QualityConfig presets (STRICT / MEDIUM / DEFAULT / LOOSE)
-│   ├── prerequisites.py    # Layer 0 — data sanity (spread, gaps, NaN)
-│   ├── rules.py            # 4 regime-aware signal rules + Rules registry
-│   ├── quality_checks.py   # Layers 1-6 quality gate + SessionFilter (zoneinfo DST)
-│   ├── llm_validator.py    # Layer 7 — Claude Haiku validates each trade
-│   ├── health_rules.py     # Walk-forward, regime coverage, trade-count guards
-│   ├── strategy_genome.py  # StrategyGenome + StrategyMiner (random + community seeds)
-│   └── tournament.py       # Walk-forward tournament: IS mine → OOS validate → Champion
-│
+│   ├── aziz_rules.py       # 6 Aziz strategies as Rule functions
+│   ├── intraday.py         # session VWAP, opening range, prior-day close
+│   ├── rules.py            # Rules registry — style='aziz' is the default
+│   ├── quality_checks.py   # 6-layer gate + SessionFilter (zoneinfo DST)
+│   ├── llm_validator.py    # Layer 7 — optional Claude-Haiku approve/reject
+│   ├── config.py           # AZIZ preset is the default
+│   ├── strategy_genome.py  # genome + miner (Aziz seeds + Aziz param space)
+│   ├── tournament.py       # walk-forward IS-mine → OOS-validate
+│   ├── health_rules.py     # walk-forward + regime-coverage health
+│   └── prerequisites.py
 ├── simulator/
-│   ├── ohlc_data.py        # OHLCData.generate() (GBM) + from_csv() (auto-detects MT5)
-│   └── trade_simulator.py  # TradeSimulator — bar-by-bar event loop
-│
-├── tests/
-│   ├── conftest.py         # sys.path setup
-│   └── test_backtest_integrity.py   # 31 integrity tests (permutation, shadow PnL, golden fixtures)
-│
-├── data/
-│   └── xauusd_m1_sample.csv   # 50 000 bars of real XAUUSD M1 (MT5, Jan–Mar 2025)
-│
-├── main.py                 # CLI entry point
-└── requirements.txt
+│   ├── ohlc_data.py        # OHLCData.generate() + from_csv (auto-MT5)
+│   └── trade_simulator.py  # bar-by-bar event loop
+├── tests/                  # pytest suite (integrity + Aziz)
+├── data/xauusd_m1_sample.csv   # 50 000 bars XAUUSD M1
+├── research/aziz/          # living knowledge base + transcripts + video index
+├── .github/workflows/ci.yml
+└── main.py
 ```
 
----
+## Aziz strategies implemented (brain/aziz_rules.py)
+
+| Rule | Aziz teaching |
+|---|---|
+| `vwap_reclaim` | *"VWAP is my favourite indicator."* |
+| `opening_range_breakout` | *"ORB is my bread and butter for the market open."* |
+| `bull_flag` | First 1.5 h only, retrace ≤ 50 % of pole, volume on break |
+| `abcd_pattern` | A = day high, B = pullback, C = consolidation, D = re-entry; 38.2 – 61.8 % retrace |
+| `red_to_green` | Cross of prior-day close in first 60 – 90 min |
+| `ma_trend_pullback` | 9/20-EMA pullback bounce, ride until 20-EMA break |
+
+## Defaults
+
+- `--preset aziz` is the default (1 % risk, 2 % daily loss, 3-strike
+  cooldown, 6 % drawdown kill, 1.5 ATR stops)
+- `--style aziz` is the default rule set (6 Aziz rules); `--style hybrid`
+  mixes both classic + Aziz (10 rules); `--style classic` returns to
+  the original 4 rules
+
+## Quality gate (7 layers)
+
+1. **Regime** — ADX direction, block counter-trend at ADX > 30
+2. **Agreement** — 2 of 6 rules (Aziz uses confluence, not majority)
+3. **Daily loss** — 2 % of equity ("walk away")
+4. **Portfolio heat** — 4 % open risk cap
+5. **Rolling health** — Sharpe ≥ 0.7 + PF ≥ 1.20 over last 30 trades
+6. **Classic** — 6 % drawdown kill, 3 consecutive losses, cooldown, ATR floor
+7. **LLM** — opt-in via `--llm` (uses ANTHROPIC_API_KEY)
 
 ## Quick start
 
 ```bash
 pip install -r requirements.txt
-
-# Synthetic data, medium quality gates
-python main.py
-
-# Real XAUUSD data
-python main.py --csv data/xauusd_m1_sample.csv --preset medium --verbose
-
-# Walk-forward tournament (mine best strategy)
-python main.py --csv data/xauusd_m1_sample.csv --mine --variants 50 --top-k 10
-
-# Run integrity tests
-python -m pytest tests/ -v
+python main.py --csv data/xauusd_m1_sample.csv --preset aziz     # Aziz on real XAUUSD M1
+python main.py --bars 1500                                       # synthetic smoke
+python main.py --csv data/xauusd_m1_sample.csv --preset aziz --style aziz --mine
+python -m pytest tests/ -v                                       # all tests
 ```
-
----
-
-## Key design decisions
-
-| Decision | Reason |
-|---|---|
-| Session filter disabled during mining | MT5 M1 data covers all hours; session gate is for live execution only |
-| `disable_session_filter` flag on QualityConfig | Separates backtest from live concerns cleanly |
-| Walk-forward split 70% IS / 30% OOS | Champion is chosen on data the miner never saw |
-| Community seeds always in pool | Known-good configs (9/21 EMA, MACD 12/26) anchor random search |
-| Composite score = Sharpe × PF × (1-DD) × log(trades) | Rewards risk-adjusted edge, punishes drawdown, requires volume |
-| zoneinfo for SessionFilter | DST handled automatically per local timezone — no hardcoded UTC offsets |
-| LLM validator (Layer 7) disabled by default | Requires ANTHROPIC_API_KEY; enable with `--llm` |
-
----
-
-## Real data format (MT5 M1)
-
-File: `data/xauusd_m1_sample.csv`  
-Instrument: XAUUSD (Gold/USD), 1-minute bars  
-Source: MetaTrader 5 export  
-Period: 2025-01-02 to ~2025-03-14 (50 000 bars)
-
-```
-# Format (UTF-16, semicolon-separated):
-time;open;high;low;close;tick_volume;spread;real_volume
-2025-01-02 01:00:00;2625.71;2626.18;2625.14;2625.34;123;13;0
-```
-
-`OHLCData.from_csv()` auto-detects UTF-16 encoding and semicolon separator.
-`tick_volume` is mapped to `volume` automatically.
-
----
-
-## Trade pipeline per bar
-
-```
-1. Prerequisites.check()       data valid? (NaN, spread, gaps)
-2. Rules.evaluate()            4 regime-aware rules → majority vote signal
-3. QualityChecks.check()       6-layer deterministic gate + position sizing
-4. LLMValidator.validate()     Layer 7 — Claude Haiku sanity check (optional)
-5. Execute trade / update equity curve
-```
-
----
-
-## Quality gate layers
-
-| Layer | What it checks |
-|---|---|
-| 1 Regime | ADX trend direction; blocks counter-trend trades when ADX > 30 |
-| 2 Agreement | Minimum N rules must agree (default 3/4) |
-| 3 Daily loss | Circuit-breaker if daily loss exceeds threshold |
-| 4 Portfolio heat | Max total open risk as fraction of equity |
-| 5 Rolling health | Sharpe + Profit Factor on last 30 closed trades |
-| 6 Classic | Drawdown kill-switch, consecutive-loss limit, cooldown, ATR floor |
-| 7 LLM | Claude Haiku approves/rejects with confidence score (optional) |
-
----
-
-## Strategy rules
-
-| Rule | Active when | Signal |
-|---|---|---|
-| EMA Crossover | ADX >= 20 (trending) | fast > slow → BUY |
-| RSI Mean Reversion | ADX < 25 (sideways) | RSI < oversold → BUY |
-| Donchian Breakout | ADX >= 20 + volume > avg | close > 20-bar high → BUY |
-| Volume Spike | Any (3× required in HIGH-vol) | spike + up bar → BUY |
-
----
-
-## Walk-forward tournament
-
-```bash
-python main.py --csv data/xauusd_m1_sample.csv --mine --variants 50 --top-k 10 --is-split 0.7
-```
-
-1. Generates pool: 5 community seeds + N random genomes
-2. Runs all on IS (70%) → scores by Sharpe × PF × (1-DD) × log(trades)
-3. Top-K survivors run on OOS (30%) → never seen during mining
-4. Champion = best OOS score, Challengers = ranked standby
-
----
 
 ## Tests
 
 ```bash
-python -m pytest tests/ -v        # all 31 tests
-python -m pytest tests/ -k "Permutation"   # only lookahead-bias tests
-python -m pytest tests/ -k "Shadow"        # only PnL arithmetic tests
-python -m pytest tests/ -k "Golden"        # only logic fixture tests
+pytest tests/test_aziz_rules.py -v          # 17 Aziz-specific tests
+pytest tests/test_backtest_integrity.py -v  # permutation + shadow-PnL + golden fixtures
 ```
 
-Three independent test classes:
-- `TestPermutation` — shuffles bar order; lookahead bias would still profit on random data
-- `TestShadowPnL` — re-derives PnL from raw OHLC independently; catches arithmetic bugs
-- `TestGoldenFixtures` — hand-crafted scenarios with mathematically certain outcomes
+## Research vault
 
----
+`research/aziz/knowledge.md` is **append-only**. New findings get dated
+entries under "Change log". Never rewrite or delete prior entries —
+older facts are still source-of-truth.
 
-## CLI reference
+`research/aziz/transcripts/` — curated transcripts from Aziz YouTube
+videos + Bear Bull Traders community webinars. 5 curated + 4 raw
+Tactiq dumps so far.
 
-```
-python main.py [options]
+`research/aziz/youtube_videos.md` — curated content map of the 13 most
+relevant Aziz videos.
 
-Data:
-  --csv PATH          Real OHLC CSV (auto-detects MT5 format)
-  --bars N            Synthetic bars to generate (default 500)
-  --seed N            Random seed (default 42)
-
-Quality preset:
-  --preset            strict | medium | default | loose  (default: medium)
-
-Simulation:
-  --capital N         Initial capital (default 10000)
-  --no-short          Disable short trades
-  --rr N              Take-profit R:R multiplier (default 2.0)
-
-LLM (Layer 7):
-  --llm               Enable Claude Haiku validator
-  --llm-key KEY       API key (or set ANTHROPIC_API_KEY)
-
-Output:
-  --verbose           Print each trade in real time
-  --save-trades       Export trades.csv
-
-Health check:
-  --health            Run walk-forward + regime coverage report
-  --free-params N     Number of free parameters (for overfitting guard)
-
-Tournament (strategy mining):
-  --mine              Run walk-forward tournament
-  --variants N        Random genomes to generate (default 50)
-  --top-k N           IS survivors tested on OOS (default 10)
-  --is-split F        IS fraction 0-1 (default 0.70)
-```
-
----
+`research/aziz/download_queue.md` — primary-source URLs to fetch from
+outside the sandbox (YouTube auto-captions via yt-dlp, BBT PDFs,
+SSRN abstracts).
 
 ## Environment
 
-- Python 3.11+, Windows 11 (also works on Linux/macOS)
+- Python 3.11+, Linux / macOS / Windows
 - Key packages: numpy, pandas, anthropic, tzdata, pytest
-- `ANTHROPIC_API_KEY` env var for LLM layer (optional)
-- MT5 installed locally (MetaTrader 5) — used as data source
-
----
-
-## What the owner wants next
-
-The owner (Szymon) wants to eventually connect this to live trading via MT5/broker API,
-with the Champion strategy executing real orders and Challengers running in shadow/paper mode.
-The tournament re-evaluates periodically; best OOS performer rotates to live slot.
+- `ANTHROPIC_API_KEY` env var for LLM layer 7 (optional)
