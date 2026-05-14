@@ -589,6 +589,96 @@ in-play universe. Methodology highlights from the abstract:
 - Performance attribution: which Aziz strategy contributes most $$
   after the rotation to Market Atlas-first scalping
 - Whether Aziz publishes the Market Atlas tool description publicly
-- "Beat the Market" paper — exact intraday-momentum rules (need the
-  full PDF; SSRN abstract page is reachable but PDF is paywalled
-  from this sandbox)
+- ~~"Beat the Market" paper — exact intraday-momentum rules~~ ✓ 2026-05-14 19:00
+
+### 2026-05-14 19:00Z — "Beat the Market" SPY rules extracted
+
+Pulled the full algorithm from the SFI working-paper abstract (No. 24-97)
+plus a paper review on quantmacro.substack.com.
+
+#### Algorithm (verbatim where possible)
+
+**Inputs per session:**
+- `OPEN_d` = SPY open price of day `d` (09:30 ET)
+- `lookback = 14 trading days`
+- Prior overnight gap (close → open) for the gap-adjustment
+
+**For each minute `m` of session day `d`:**
+
+1. For each of the last 14 days `i`, compute the minute-`m`
+   cumulative return: `r_i(m) = (price_i(m) - open_i) / open_i`
+2. `mean_return_to_m = mean(r_i(m) for i in last 14 days)`
+3. `gap_up_adj`    = max(0, open_d - prev_close) / prev_close
+4. `gap_down_adj`  = max(0, prev_close - open_d) / prev_close
+5. **Noise boundaries:**
+   - `upper(m) = OPEN_d × (1 + mean_return_to_m + gap_down_adj)`
+   - `lower(m) = OPEN_d × (1 - mean_return_to_m - gap_up_adj)`
+
+> *"When SPY price is between these boundaries, demand and supply are
+> in balance — no trend."*
+
+#### Decision clock
+
+- Only check at **HH:00 and HH:30** (every 30 minutes inside the session)
+- This avoids over-trading and matches institutional rebalance ticks
+
+#### Entry rules
+
+- If `price > upper(m)` at the next HH:00/HH:30 tick → **OPEN LONG**
+- If `price < lower(m)` at the next HH:00/HH:30 tick → **OPEN SHORT**
+
+#### Exit rules
+
+- **Dynamic trailing stop** — paper does not publish the exact trail
+  formula in the abstract. Two reasonable defaults to try:
+  - ATR-based trail (e.g. 2 × ATR-14)
+  - Re-cross of the opposite noise boundary
+- Close at end of regular-session if still open (no overnight hold)
+
+#### Performance (from abstract)
+
+| Metric | Value |
+|---|---|
+| Period | 2007 – Q1 2024 (~17 years) |
+| Total return (net of costs) | **+1 985 %** |
+| Annualised return | **+19.6 %** |
+| Sharpe ratio | **1.33** |
+| Beta vs SPY | ≈ 0 |
+| Max drawdown | (in full PDF, not in abstract) |
+| Trades per year | (in full PDF, not in abstract) |
+
+#### Implementation notes for algo-miner
+
+Implementable as a **new Aziz rule** `intraday_momentum_boundary` in
+`brain/aziz_rules.py`:
+
+```python
+def intraday_momentum_boundary_rule(
+    df, regimes=None,
+    lookback_days: int = 14,
+    decision_clock_minutes: tuple = (0, 30),  # HH:00, HH:30
+):
+    """
+    Zarattini × Aziz × Barbon "Beat the Market" (SFI 24-97).
+    SPY-tuned intraday momentum boundary breakout.
+    """
+    # ... compute upper/lower per minute from 14-day lookback
+    # ... fire BUY at HH:00/HH:30 if close > upper; SELL if close < lower
+```
+
+Genome additions:
+- `imb_lookback_days` (5–30, default 14)
+- `imb_decision_clock` (every 15 / 30 / 60 min)
+- `imb_use_gap_adj` (bool)
+
+Preset for SPY momentum:
+- Universe: SPY (single-instrument)
+- ORB window: not used (this rule replaces it)
+- Stops: ATR-based trail, 2× ATR-14
+- Sizing: 1 % risk (consistent with Aziz house rules)
+
+#### Independent extension (Maróy 2024)
+
+Ákos Maróy published a follow-up (SSRN `5095349`) with
+parameter-optimization improvements and alternative exits.
+Worth investigating once base implementation is validated.
