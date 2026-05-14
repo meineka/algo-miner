@@ -35,8 +35,8 @@ collab/jobs/
   "id": "2026-05-14T20-30Z_mt5_first_backtest",
   "kind": "mt5_backtest",
   "params": {
-    "expert": "Aziz_NAS100",
-    "symbol": "NAS100",
+    "expert": "Aziz_NQ",
+    "symbol": "NQ",
     "period": "M1",
     "from":   "2024.04.01",
     "to":     "2026.05.14",

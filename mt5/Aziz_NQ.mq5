@@ -1,10 +1,10 @@
 //+------------------------------------------------------------------+
-//|                                              Aziz_NAS100.mq5     |
+//|                                              Aziz_NQ.mq5     |
 //|                                                          meineka |
 //|                       https://github.com/meineka/algo-miner      |
 //+------------------------------------------------------------------+
 //
-//  ANDREW-AZIZ HYBRID EA FOR NAS100 (NASDAQ-100 CFD)
+//  ANDREW-AZIZ HYBRID EA FOR NQ (NASDAQ-100 CFD)
 //  =================================================
 //  Version 3.0 — second audit pass; bug-fixes over v2.0:
 //    • VWAP-reclaim now actually triggers (streak captured BEFORE cross).
@@ -21,7 +21,7 @@
 //                  Optional auto-flat at session-close − N min.
 //  Risk          : 1 % per trade; 2 % daily loss; 3-strike cooldown;
 //                  6 % drawdown kill; max-trades-per-day cap; spread guard.
-//  Target broker : GoMarkets NAS100 / US100 / USTEC CFD on MT5.
+//  Target broker : GoMarkets NQ / US100 / USTEC CFD on MT5.
 //  Backtest      : Strategy Tester, "Every tick based on real ticks" (mode 4).
 //                  Recommended period: 2024-04-01 → today.
 //
@@ -31,7 +31,7 @@
 #property link        "https://github.com/meineka/algo-miner"
 #property version     "3.00"
 #property strict
-#property description "Aziz hybrid EA for NAS100 — ORB + VWAP reclaim + 9/20 EMA trend"
+#property description "Aziz hybrid EA for NQ — ORB + VWAP reclaim + 9/20 EMA trend"
 #property description "Audited v3: VWAP-reclaim fix, OnNewBar gate, spread filter, auto-flat"
 
 #include <Trade\Trade.mqh>
@@ -45,7 +45,7 @@ CPositionInfo position;
 //============================================================================
 
 input group "── Asset & Session (server time, see README) ──"
-input string Inp_SymbolAlias       = "";   // empty → use chart symbol; e.g. "NAS100" / "US100" / "USTEC"
+input string Inp_SymbolAlias       = "";   // empty → use chart symbol; e.g. "NQ" / "US100" / "USTEC"
 input int    Inp_SessionOpenHour   = 13;   // NY 09:30 ET = 13:30 UTC (DST). GoMarkets server time = UTC+2/+3 ⇒ adjust to 15:30 (DST) / 16:30 (winter). See README.
 input int    Inp_SessionOpenMin    = 30;
 input int    Inp_SessionCloseHour  = 20;
@@ -84,7 +84,7 @@ input double Inp_Partial1Pct        = 50.0;
 input group "── Execution ──"
 input ulong  Inp_MagicNumber        = 20260514;
 input ulong  Inp_DeviationPoints    = 20;
-input string Inp_Comment            = "AZIZ_NAS100";
+input string Inp_Comment            = "AZIZ_NQ";
 input bool   Inp_Verbose            = false;
 
 //============================================================================
@@ -169,25 +169,25 @@ int OnInit()
 {
    g_symbol = (StringLen(Inp_SymbolAlias) > 0) ? Inp_SymbolAlias : _Symbol;
    if(!SymbolSelect(g_symbol, true))
-   { PrintFormat("[AZIZ_NAS100] Symbol '%s' not available — abort.", g_symbol); return INIT_FAILED; }
+   { PrintFormat("[AZIZ_NQ] Symbol '%s' not available — abort.", g_symbol); return INIT_FAILED; }
 
    if(Inp_EMA_Fast >= Inp_EMA_Slow)
-   { Print("[AZIZ_NAS100] EMA_Fast must be < EMA_Slow"); return INIT_PARAMETERS_INCORRECT; }
+   { Print("[AZIZ_NQ] EMA_Fast must be < EMA_Slow"); return INIT_PARAMETERS_INCORRECT; }
    if(Inp_ORB_WindowMinutes < 1)
-   { Print("[AZIZ_NAS100] ORB_WindowMinutes must be >= 1"); return INIT_PARAMETERS_INCORRECT; }
+   { Print("[AZIZ_NQ] ORB_WindowMinutes must be >= 1"); return INIT_PARAMETERS_INCORRECT; }
    if(Inp_SessionCloseHour * 60 + Inp_SessionCloseMin <=
       Inp_SessionOpenHour  * 60 + Inp_SessionOpenMin)
-   { Print("[AZIZ_NAS100] Session close must be after session open"); return INIT_PARAMETERS_INCORRECT; }
+   { Print("[AZIZ_NQ] Session close must be after session open"); return INIT_PARAMETERS_INCORRECT; }
    if(!Inp_UseORB && !Inp_UseVWAPReclaim)
-   { Print("[AZIZ_NAS100] Enable at least one entry route (ORB or VWAP reclaim)"); return INIT_PARAMETERS_INCORRECT; }
+   { Print("[AZIZ_NQ] Enable at least one entry route (ORB or VWAP reclaim)"); return INIT_PARAMETERS_INCORRECT; }
    if(Inp_VWAPConfirmBars < 1)
-   { Print("[AZIZ_NAS100] VWAPConfirmBars must be >= 1"); return INIT_PARAMETERS_INCORRECT; }
+   { Print("[AZIZ_NQ] VWAPConfirmBars must be >= 1"); return INIT_PARAMETERS_INCORRECT; }
 
    g_hEMA_fast = iMA(g_symbol, PERIOD_M1, Inp_EMA_Fast, 0, MODE_EMA, PRICE_CLOSE);
    g_hEMA_slow = iMA(g_symbol, PERIOD_M1, Inp_EMA_Slow, 0, MODE_EMA, PRICE_CLOSE);
    g_hATR      = iATR(g_symbol, PERIOD_M1, Inp_ATR_Period);
    if(g_hEMA_fast == INVALID_HANDLE || g_hEMA_slow == INVALID_HANDLE || g_hATR == INVALID_HANDLE)
-   { Print("[AZIZ_NAS100] indicator handle creation failed — abort."); return INIT_FAILED; }
+   { Print("[AZIZ_NQ] indicator handle creation failed — abort."); return INIT_FAILED; }
 
    trade.SetExpertMagicNumber(Inp_MagicNumber);
    trade.SetDeviationInPoints(Inp_DeviationPoints);
@@ -197,7 +197,7 @@ int OnInit()
    g_today_start_equity  = g_peak_equity;
    RolloverDay(TodayDate());
 
-   PrintFormat("[AZIZ_NAS100] v3 init OK on %s | risk=%.2f%% | day-stop=%.2f%% | DD=%.2f%% | session %02d:%02d–%02d:%02d UTC",
+   PrintFormat("[AZIZ_NQ] v3 init OK on %s | risk=%.2f%% | day-stop=%.2f%% | DD=%.2f%% | session %02d:%02d–%02d:%02d UTC",
                g_symbol, Inp_RiskPerTradePct, Inp_MaxDailyLossPct, Inp_MaxDrawdownPct,
                Inp_SessionOpenHour, Inp_SessionOpenMin, Inp_SessionCloseHour, Inp_SessionCloseMin);
    return INIT_SUCCEEDED;
@@ -233,7 +233,7 @@ void OnTick()
       double dd_pct = 100.0 * (g_peak_equity - eq) / g_peak_equity;
       if(dd_pct >= Inp_MaxDrawdownPct)
       {
-         PrintFormat("[AZIZ_NAS100] DD-kill: %.2f%% > %.2f%%. EA halted permanently.", dd_pct, Inp_MaxDrawdownPct);
+         PrintFormat("[AZIZ_NQ] DD-kill: %.2f%% > %.2f%%. EA halted permanently.", dd_pct, Inp_MaxDrawdownPct);
          g_halted_for_dd = true;
          CloseAllPositions();
       }
@@ -245,7 +245,7 @@ void OnTick()
       double day_loss_pct = 100.0 * (-g_today_realized_pnl) / g_today_start_equity;
       if(day_loss_pct >= Inp_MaxDailyLossPct)
       {
-         PrintFormat("[AZIZ_NAS100] daily-loss circuit-breaker: %.2f%% >= %.2f%%. Paused until next session.",
+         PrintFormat("[AZIZ_NQ] daily-loss circuit-breaker: %.2f%% >= %.2f%%. Paused until next session.",
                      day_loss_pct, Inp_MaxDailyLossPct);
          g_halted_for_day = true;
          CloseAllPositions();
@@ -255,7 +255,7 @@ void OnTick()
    // Auto-flat near session close
    if(Inp_AutoFlatOnClose && g_session_flat_time > 0 && TimeCurrent() >= g_session_flat_time && HasOpenPosition())
    {
-      PrintFormat("[AZIZ_NAS100] auto-flat before session close");
+      PrintFormat("[AZIZ_NQ] auto-flat before session close");
       CloseAllPositions();
       g_stat_autoflats++;
    }
@@ -384,7 +384,7 @@ void MaybeFinaliseORB()
    g_orb_finalised  = true;
 
    if(Inp_Verbose)
-      PrintFormat("[AZIZ_NAS100] ORB %s HI=%.2f LO=%.2f avgVol=%.0f",
+      PrintFormat("[AZIZ_NQ] ORB %s HI=%.2f LO=%.2f avgVol=%.0f",
                   TimeToString(now, TIME_DATE|TIME_MINUTES), g_orb_high, g_orb_low, g_orb_volume_avg);
 }
 
@@ -523,7 +523,7 @@ void OpenTrade(int direction)
    if(CopyBuffer(g_hATR, 0, 1, 1, atr_buf) <= 0) return;
    double atr = atr_buf[0];
    if(atr <= 0.0)
-   { if(Inp_Verbose) Print("[AZIZ_NAS100] ATR<=0, skipping trade"); return; }
+   { if(Inp_Verbose) Print("[AZIZ_NQ] ATR<=0, skipping trade"); return; }
 
    double stop_dist = atr * Inp_ATR_StopMult;
    double sl_price  = (direction > 0) ? (price - stop_dist) : (price + stop_dist);
@@ -537,14 +537,14 @@ void OpenTrade(int direction)
 
    double lots = CalculateLotSize(stop_dist);
    if(lots <= 0)
-   { if(Inp_Verbose) Print("[AZIZ_NAS100] computed lot size = 0, skipping"); return; }
+   { if(Inp_Verbose) Print("[AZIZ_NQ] computed lot size = 0, skipping"); return; }
 
    bool ok = (direction > 0)
              ? trade.Buy(lots,  g_symbol, price, sl_price, tp2_price, Inp_Comment)
              : trade.Sell(lots, g_symbol, price, sl_price, tp2_price, Inp_Comment);
    if(!ok)
    {
-      PrintFormat("[AZIZ_NAS100] order failed: code=%d retcode=%d %s",
+      PrintFormat("[AZIZ_NQ] order failed: code=%d retcode=%d %s",
                   GetLastError(), trade.ResultRetcode(), trade.ResultRetcodeDescription());
       return;
    }
@@ -562,7 +562,7 @@ void OpenTrade(int direction)
    g_bars_since_trade = 0;
    g_stat_trades_opened++;
 
-   PrintFormat("[AZIZ_NAS100] %s @ %.2f  SL=%.2f  TP1=%.2f  TP2=%.2f  lots=%.2f  ATR=%.2f  spread=%dpt",
+   PrintFormat("[AZIZ_NQ] %s @ %.2f  SL=%.2f  TP1=%.2f  TP2=%.2f  lots=%.2f  ATR=%.2f  spread=%dpt",
                (direction > 0) ? "LONG" : "SHORT", price, sl_price, tp1_price, tp2_price, lots, atr,
                (int)SymbolInfoInteger(g_symbol, SYMBOL_SPREAD));
 }
@@ -635,7 +635,7 @@ void ManageOpenPosition()
 
    if(!trade.PositionClosePartial(ticket, close_lots))
    {
-      if(Inp_Verbose) PrintFormat("[AZIZ_NAS100] partial close failed code=%d", trade.ResultRetcode());
+      if(Inp_Verbose) PrintFormat("[AZIZ_NQ] partial close failed code=%d", trade.ResultRetcode());
       return;
    }
    g_open_tp1_filled = true;
@@ -648,9 +648,9 @@ void ManageOpenPosition()
       double be   = NormalizeDouble(g_open_entry_price, digits);
       double tp2  = NormalizeDouble(g_open_tp2_price,   digits);
       if(!trade.PositionModify(position.Ticket(), be, tp2))
-         if(Inp_Verbose) PrintFormat("[AZIZ_NAS100] BE modify failed code=%d", trade.ResultRetcode());
+         if(Inp_Verbose) PrintFormat("[AZIZ_NQ] BE modify failed code=%d", trade.ResultRetcode());
    }
-   if(Inp_Verbose) PrintFormat("[AZIZ_NAS100] TP1 partial %.2f lots @ %.2f, stop→BE", close_lots, price);
+   if(Inp_Verbose) PrintFormat("[AZIZ_NQ] TP1 partial %.2f lots @ %.2f, stop→BE", close_lots, price);
 }
 
 void CloseAllPositions()
@@ -696,7 +696,7 @@ void OnTradeTransaction(const MqlTradeTransaction& trans,
       g_open_tp1_filled = false;
       g_open_direction  = 0;
    }
-   if(Inp_Verbose) PrintFormat("[AZIZ_NAS100] deal pnl=%.2f day_pnl=%.2f consec_loss=%d",
+   if(Inp_Verbose) PrintFormat("[AZIZ_NQ] deal pnl=%.2f day_pnl=%.2f consec_loss=%d",
                                 pnl, g_today_realized_pnl, g_consecutive_losses);
 }
 
@@ -715,7 +715,7 @@ void PrintBacktestSummary()
    double r_expect   = (avg_loss > 0) ? (avg_win / avg_loss) : 0.0;
 
    Print("══════════════════════════════════════════════════════════════════");
-   Print(" Aziz NAS100 EA — backtest summary");
+   Print(" Aziz NQ EA — backtest summary");
    Print("══════════════════════════════════════════════════════════════════");
    PrintFormat(" Symbol                : %s", g_symbol);
    PrintFormat(" Trades opened         : %d  (won %d / lost %d)", total, g_stat_trades_won, g_stat_trades_lost);

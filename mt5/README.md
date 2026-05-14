@@ -1,4 +1,4 @@
-# Aziz NAS100 — MetaTrader 5 Expert Advisor
+# Aziz NQ — MetaTrader 5 Expert Advisor
 
 Implementation of Andrew Aziz's day-trading strategies for the NASDAQ-100
 CFD on **GoMarkets** (or any broker that offers the same instrument).
@@ -7,7 +7,7 @@ CFD on **GoMarkets** (or any broker that offers the same instrument).
 
 ```
 mt5/
-├── Aziz_NAS100.mq5   ← the Expert Advisor source (compile with MetaEditor)
+├── Aziz_NQ.mq5   ← the Expert Advisor source (compile with MetaEditor)
 ├── README.md         ← this file
 └── AUDIT.md          ← code-audit findings (v1 → v2 → v3)
 ```
@@ -29,7 +29,7 @@ mt5/
 
 ## Install
 
-1. **Copy** `Aziz_NAS100.mq5` to:
+1. **Copy** `Aziz_NQ.mq5` to:
    ```
    <MT5 install>\MQL5\Experts\
    ```
@@ -38,7 +38,7 @@ mt5/
 2. **Compile** in MetaEditor (`F7`). You should see "0 errors, 0 warnings".
 
 3. **Restart** MT5 or refresh the Navigator (Ctrl+N) and drag the EA onto a
-   **NAS100 M1 chart**.
+   **NQ M1 chart**.
 
 ## GoMarkets-specific setup
 
@@ -46,11 +46,11 @@ GoMarkets MT5 exposes the NASDAQ-100 CFD under a broker-dependent name:
 
 | Symbol seen on GoMarkets | Try in this order |
 |---|---|
-| `NAS100`, `NAS100.cfd` | most common |
+| `NQ`, `NQ.cfd` | most common |
 | `US100`                 | alternative naming |
 | `USTEC`                 | some account types |
 
-Leave `Inp_SymbolAlias` empty if you attach the EA to a NAS100 chart — it
+Leave `Inp_SymbolAlias` empty if you attach the EA to a NQ chart — it
 auto-detects via `_Symbol`. Otherwise set the alias explicitly.
 
 ### Server time vs. session time
@@ -76,8 +76,8 @@ GoMarkets, **or** switch GoMarkets to GMT-server-time via account settings.
    (Ctrl+Shift+J for the History Center on some MT5 builds; otherwise
    right-click the symbol in *Market Watch → Specification → Update Data*).
 2. **Strategy Tester** (Ctrl+R or *View → Strategy Tester*):
-   - Expert: `Aziz_NAS100`
-   - Symbol: `NAS100` (or your broker's alias)
+   - Expert: `Aziz_NQ`
+   - Symbol: `NQ` (or your broker's alias)
    - Period: **M1**
    - Date: **From 2024-04-01 To today**
    - Forward: optional
@@ -92,16 +92,16 @@ The **Journal** tab prints state transitions and a final summary block
 ## Reading the journal output
 
 ```
-[AZIZ_NAS100] v3 init OK on NAS100 | risk=1.00% | day-stop=2.00% | DD=6.00% | ...
-[AZIZ_NAS100] ORB 2024.04.01 13:45 HI=18234.50 LO=18201.25 avgVol=412
-[AZIZ_NAS100] LONG @ 18236.10  SL=18225.40  TP1=18246.80  TP2=18257.50  lots=0.20  ATR=7.13  spread=12pt
-[AZIZ_NAS100] TP1 partial 0.10 lots @ 18246.85, stop→BE
-[AZIZ_NAS100] deal pnl=10.50 day_pnl=10.50 consec_loss=0
+[AZIZ_NQ] v3 init OK on NQ | risk=1.00% | day-stop=2.00% | DD=6.00% | ...
+[AZIZ_NQ] ORB 2024.04.01 13:45 HI=18234.50 LO=18201.25 avgVol=412
+[AZIZ_NQ] LONG @ 18236.10  SL=18225.40  TP1=18246.80  TP2=18257.50  lots=0.20  ATR=7.13  spread=12pt
+[AZIZ_NQ] TP1 partial 0.10 lots @ 18246.85, stop→BE
+[AZIZ_NQ] deal pnl=10.50 day_pnl=10.50 consec_loss=0
 ...
 ══════════════════════════════════════════════════════════════════
- Aziz NAS100 EA — backtest summary
+ Aziz NQ EA — backtest summary
 ══════════════════════════════════════════════════════════════════
- Symbol                : NAS100
+ Symbol                : NQ
  Trades opened         : 128  (won 71 / lost 57)
  Partial fills (TP1)   : 71
  Win rate              : 55.47%

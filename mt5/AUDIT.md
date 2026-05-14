@@ -1,4 +1,4 @@
-# Aziz NAS100 EA — Audit log
+# Aziz NQ EA — Audit log
 
 Three iterations: v1 → v2 → v3. This file documents what was found and
 fixed at each stage so the next reviewer (or ChatGPT collaborator) can
@@ -80,7 +80,7 @@ verify the corrections.
    A small Python wrapper that drives MT5 via WebRequest or files
    could enforce proper walk-forward windows.
 6. **No fractional-lot guard** — if account currency conversion makes
-   `loss_per_lot` very small for NAS100 ($1/point CFDs in JPY/AUD
+   `loss_per_lot` very small for NQ ($1/point CFDs in JPY/AUD
    accounts), `risk_money / loss_per_lot` could exceed `max_lot`. The
    `if(lots > max_lot) lots = max_lot;` clamps it but the user is
    then over-risking on the broker's max-lot cap. Add a warning.
