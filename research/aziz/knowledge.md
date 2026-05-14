@@ -744,5 +744,35 @@ When we add `intraday_momentum_boundary_rule` to `brain/aziz_rules.py`:
   after rotation to Market Atlas-first scalping
 - Whether Aziz publishes the Market Atlas tool description publicly
 - ~~Maróy parameter-optimization details~~ ✓ 2026-05-14 19:31
-- Maróy's exact "Ladder" partial-size schedule (1 R / 2 R / 3 R
-  ratios — needs full PDF, only abstract was reachable)
+- Maróy's exact "Ladder" partial-size schedule — see 20:31Z entry below
+
+### 2026-05-14 20:31Z — Ladder partial-size search
+
+Quick search for the exact Maróy Ladder schedule (1R / 2R / 3R
+size percentages). The SSRN abstract confirms "Ladder" / "VWAP &
+Ladder" exits exist and produce Sharpe > 3, but the precise partial-
+size split is **inside the paywalled full PDF only**.
+
+#### Common Ladder interpretations in retail literature
+- **Three-tier**: 33 % at 1 R, 33 % at 2 R, 34 % at 3 R (with trail thereafter)
+- **Four-tier**: 25 % at 1 R, 25 % at 2 R, 25 % at 3 R, 25 % trail
+- **Aziz-default in current EA**: two-tier, 50 % at 1 R + 50 % at 2 R
+
+#### Practical recipe for algo-miner
+
+Implement Ladder as a **list of (R_multiple, percent_of_remaining)**
+tuples on the genome / EA inputs:
+
+```python
+ladder = [(1.0, 0.50), (2.0, 0.50)]                 # current Aziz default
+ladder = [(1.0, 0.33), (2.0, 0.33), (3.0, 0.34)]    # 3-tier Ladder
+ladder = [(1.0, 0.25), (2.0, 0.25), (3.0, 0.25), (None, 0.25)]  # 4-tier with trail
+```
+
+When the full Maróy PDF becomes reachable (via SFI working-paper
+series, paywalled at unisg.ch right now), update with the verified
+split. Until then test 3-tier 33/33/34 as the "Ladder" default and
+benchmark against the 2-tier baseline on SPY 1-min data.
+
+Source: SSRN abstract `5095349` (paywalled PDF) + retail-literature
+common practice.
