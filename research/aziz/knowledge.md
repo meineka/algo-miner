@@ -498,7 +498,51 @@ livestreams (the BBT mentors Carlos + Norma still do).
 #### Open follow-ups (updated again)
 - Performance attribution: which Aziz strategy contributes most $$
   after the rotation to Market Atlas-first scalping
-- Exact NASDAQ TotalView API rate limits + feed cost structure
+- ~~Exact NASDAQ TotalView API rate limits + feed cost structure~~ ✓ 2026-05-14
 - Whether Aziz publishes the Market Atlas tool description publicly
   (so we could approximate it from Yahoo / Polygon / Alpaca feeds)
 - 2025/2026 Zarattini × Aziz SSRN paper update
+
+### 2026-05-14 18:00Z — Market Atlas data-feed forensics
+
+For the algo-miner project: can we approximate Aziz's Market Atlas
+view from cheaper / open feeds?
+
+**Underlying feed: NASDAQ TotalView-ITCH 5.0**
+- The full-depth, every-quote-every-order spec NASDAQ publishes
+- Cloud-friendly historical replay available via **Nasdaq Data Link**
+  ("NTV" dataset) — programmatic access; pricing not public
+- Aziz's $20/month-per-user pass-through fee = retail TotalView
+  display licence (matches Interactive Brokers' bundled fee)
+
+**Vendor alternatives by tier**
+
+| Tier | Provider | Depth | Time axis | Cost (retail) |
+|---|---|---|---|---|
+| Full L3 | **Databento XNAS.ITCH** | every order book event | yes, replay matches live | pay-per-message |
+| Full L2 | **dxFeed** TotalView for Quantower | top + depth | yes | ~$70/mo |
+| L1+top-N | Nasdaq Basic (BBO + last) | top-of-book | yes | -60 % vs. TotalView |
+| L1 only | IEX SIP via Alpaca | best bid/ask | yes (snapshots) | free / paid tiers |
+| L2 derived | Polygon.io | L1 + trades | yes | $79–199/mo |
+
+Alpaca explicitly does **NOT** ship L2 order-book data on the equity
+side (only L1 + executions). IEX feed covers only ~2 % of US market
+volume, so even L2-on-IEX wouldn't match TotalView coverage.
+
+**Implication for algo-miner:**
+- Faithful Market Atlas replica needs **TotalView-ITCH** ($) or
+  **Databento XNAS.ITCH** (pay-per-message but flexible)
+- Cheap approximation: Polygon.io trade prints + 1-min OHLCV aggregates +
+  derived "synthetic liquidity pool" (volume clustering at recent
+  price levels) — not real order book but captures the magnet effect
+- Open-source data path:
+  1. Subscribe to a paid TotalView mirror (databento/dxfeed)
+  2. Stream order events into a local heat-map renderer (bookmap-style)
+  3. Annotate with VWAP + Camarilla pivots
+  4. Plug into the existing AZIZ rule set as a new Layer-0 filter
+     ("Liquidity-pool present in trade direction → green-light entry")
+
+**Action item:** add `brain/liquidity_pool.py` rule once a feed is
+budgeted — currently parked as a stretch goal.
+
+Sources: Databento (xnas.itch), Nasdaq Data Link NTV, Alpaca docs.
