@@ -181,3 +181,34 @@ Filters Aziz applies before market open to build his watchlist:
   overviews, BBT Session 4 PDF excerpts (not downloadable —
   `host_not_allowed`), SSRN paper abstracts, Alphatrends podcast
   description, Wikipedia.
+
+### 2026-05-14 — Angels & low-float position sizing
+
+- **Angel definition:** *"An Angel is a low float stock (usually less
+  than twenty million shares) that has gapped up significantly due
+  to important fundamental news."* (BBT)
+- Low-float gappers (< 10–20 M shares) produce the **largest
+  percentage runners** but are the most volatile, most prone to
+  violent reversals, and have the **widest spreads**.
+- Aziz position-sizing rule for Angels: *"Your position size should be
+  dramatically smaller on a stock with a 5-million-share float than
+  on a stock with a 100-million-share float. The same dollar risk
+  means fewer shares."*
+- Source: WebSearch snippets from *Advanced Techniques in Day
+  Trading* (Shortform summary) and BBT teaching materials. Exact
+  formula not in indexed snippets — only the qualitative rule.
+
+### 2026-05-14 — ATR stop multipliers
+
+- No Aziz-specific ATR multiplier surfaced in the indexed snippets
+  beyond the general 1.5–2.0 range used across the trading
+  community. Aziz mostly uses **structural stops** (VWAP, 9/20 EMA,
+  range candle high/low) rather than ATR-multiplied stops.
+- Sandbox WebSearch returns only generic "ATR × 1.5 default"
+  guidance, not Aziz primary-source numbers.
+
+### Open follow-ups for next ticks
+- Exact share-size formula for Angel trades (book chapter reference)
+- VWAP-stop-loss exit rules (immediate exit vs. close-of-candle)
+- His view on partial profit-taking (½ at first target, run trailer?)
+- 2025/2026 Zarattini × Aziz academic paper, if any
