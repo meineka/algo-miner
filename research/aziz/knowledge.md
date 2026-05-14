@@ -212,3 +212,35 @@ Filters Aziz applies before market open to build his watchlist:
 - VWAP-stop-loss exit rules (immediate exit vs. close-of-candle)
 - His view on partial profit-taking (½ at first target, run trailer?)
 - 2025/2026 Zarattini × Aziz academic paper, if any
+
+### 2026-05-14 17:00Z — partial profit-taking & trade management
+
+Aziz **scales out** rather than holding a single position to a single target:
+
+- Sells **½ position at first target** (typically point D in an ABCD,
+  or a structural level like prior-day high / VWAP / a 9-EMA touch).
+- **Stop moves to break-even immediately** after the partial fill.
+- Rule: *"Never go red on a stock that you already booked some profit on."*
+- Remaining ½ runs to second target OR until "sellers acquire control"
+  / momentum visibly fades.
+- Stop on the runner: discretionary structural — Aziz **does not use
+  trailing-stop orders**, he watches the chart and exits manually.
+
+ABCD-specific tier:
+- 1st target ≈ 1:1 (at point D, the breakout level)
+- 2nd target ≈ 2:1 or further (extension / next resistance)
+
+Risk-reward floor: **minimum 2:1 win:lose** across all setups; ABCD
+is the strict 1:1 / 2:1 tiered exit.
+
+Implications for `algo-miner`:
+- `Trade` could carry `tp1_price` / `tp1_size` in addition to single `tp_price`.
+- After tp1 fill, `stop_price` is overwritten with `entry_price`.
+- New genome knobs: `tp1_r_mult` (default 1.0) and `tp1_size_pct`
+  (default 0.5).
+
+### Open follow-ups (updated)
+- Exact share-size formula for Angel trades (book chapter reference)
+- VWAP-stop-loss exit rules (immediate exit vs. close-of-candle)
+- 2025/2026 Zarattini × Aziz academic paper, if any
+- His scanner tooling specifics (Trade-Ideas / Finviz / DAS filter strings)
