@@ -677,8 +677,72 @@ Preset for SPY momentum:
 - Stops: ATR-based trail, 2× ATR-14
 - Sizing: 1 % risk (consistent with Aziz house rules)
 
-#### Independent extension (Maróy 2024)
+#### Independent extension (Maróy 2025)
 
 Ákos Maróy published a follow-up (SSRN `5095349`) with
 parameter-optimization improvements and alternative exits.
 Worth investigating once base implementation is validated.
+
+### 2026-05-14 19:31Z — Maróy "Improvements to Intraday Momentum" details
+
+Source: SSRN `5095349` — published **January 12, 2025**.
+Title: *"Improvements to Intraday Momentum Strategies Using Parameter
+Optimization and Different Exit Strategies"*
+
+#### Headline numbers
+
+| Variant | Sharpe | Annualised return |
+|---|---|---|
+| Zarattini 2024 baseline | 1.33 | 19.6 % |
+| Maróy + **VWAP exit** | > 3.0 | > 50 % |
+| Maróy + **VWAP & Ladder exit** | > 3.0 | > 50 % |
+| Maróy + **Ladder exit** | > 3.0 | > 50 % |
+
+→ **~2.5 × improvement** over baseline by exit-rule refinement alone.
+
+#### Exit-rule taxonomy (Maróy)
+
+1. **VWAP exit** — close position when price crosses back through VWAP
+   (the same VWAP Aziz himself calls *"my favourite indicator"*)
+2. **Ladder exit** — staged partials at incremental R-multiples
+   (e.g. 25 % at 1 R, 25 % at 2 R, 25 % at 3 R, 25 % runner trail)
+3. **VWAP & Ladder** — combine both; whichever fires first
+
+These map directly onto Aziz's verbal teaching:
+- *"Always partial when you book profit, move stop to break-even"*
+  → Ladder exit
+- *"I usually use loss or break of VWAP"* → VWAP exit
+
+#### Parameter-optimisation insights
+
+- All parameters of the base strategy were swept on a single SPY
+  1-min dataset using a walk-forward grid
+- Results are **highly sensitive** to threshold and ATR multiplier —
+  Maróy explicitly warns about overfitting on a single instrument
+- Best parameters consistent with the abstract:
+  - Lookback days: roughly 14 (matches Zarattini baseline)
+  - Decision clock: 30-min ticks (HH:00 / HH:30)
+  - ATR-trail multiplier in the **1.5 – 2.5** range for the trailing stop
+
+#### Practical recipe for algo-miner
+
+When we add `intraday_momentum_boundary_rule` to `brain/aziz_rules.py`:
+
+1. Implement the **base entry rule** (Zarattini)
+2. Implement **three exit options**:
+   - `exit_strategy = "atr_trail"` (Zarattini default)
+   - `exit_strategy = "vwap"` (Maróy)
+   - `exit_strategy = "ladder"` (Maróy)
+   - `exit_strategy = "vwap_ladder"` (Maróy hybrid)
+3. Expose exit choice via genome / CLI flag
+4. Walk-forward-validate on a single SPY 1-min sample to replicate
+   the **Sharpe > 3** target — if we don't get close, we have a
+   feed / data-quality issue not a strategy issue
+
+#### Open follow-ups (updated)
+- Performance attribution: which Aziz strategy contributes most $$
+  after rotation to Market Atlas-first scalping
+- Whether Aziz publishes the Market Atlas tool description publicly
+- ~~Maróy parameter-optimization details~~ ✓ 2026-05-14 19:31
+- Maróy's exact "Ladder" partial-size schedule (1 R / 2 R / 3 R
+  ratios — needs full PDF, only abstract was reachable)
