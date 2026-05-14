@@ -244,3 +244,158 @@ Implications for `algo-miner`:
 - VWAP-stop-loss exit rules (immediate exit vs. close-of-candle)
 - 2025/2026 Zarattini × Aziz academic paper, if any
 - His scanner tooling specifics (Trade-Ideas / Finviz / DAS filter strings)
+
+---
+
+### 2026-05-14 — MASS TRANSCRIPT INGEST (6 videos, ~6 hours of content)
+
+User supplied raw transcripts of Aziz's full curriculum + 2 community
+mentors + 3 live trade walkthroughs. Saved as curated files under
+`transcripts/`. New facts and operational rules below:
+
+#### Capital, account, latency
+- **Account minimum:** $10 000 (Aziz's recommendation); US PDT rule
+  requires $25 000 to escape the 4-day-trades-in-5-days lockout.
+  Offshore brokers (CMEG / Lightspeed / SureTrader) bypass PDT.
+- **Internet:** wired cable, not Wi-Fi. Low ping > bandwidth.
+- **Latency target:** < 200 ms to NASDAQ servers (NJ/NY).
+- **DAS Trader Pro cost:** ~$150/month + $15–20 data feed.
+- **Sim minimum:** 3 months before going live, on the same platform.
+- **Computer specs:** Intel i7, 16-32 GB RAM, SSD, multi-monitor GPU.
+
+#### Scanner criteria (re-stated exactly from current course)
+- Gap up or down ≥ **2 %**
+- Price range: **$5 – $250**
+- Pre-market volume ≥ **100 000 shares**
+- Average True Range ≥ **$0.50** intraday
+- Avoid: penny stocks, block-trade-only premarkets, foreign ADRs
+
+#### Risk-management rules (verbatim)
+- **1 % rule:** never risk > 1 % of account on one trade (shark-bite cap)
+- **6 % rule:** if down 6 % of account in last 30 days → switch back to
+  simulator for 2 weeks (piranha-bite cap)
+- **2:1 minimum R:R** to enter any trade
+- **Hawk day / tilt day signs:** caffeine + P&L-watching + revenge
+  trading + averaging down → STOP, walk away, broker lockout
+
+#### Scale-out + trade management
+- Default: **½ position at first target = 1 R** → stop to break-even → ½ runs
+- Verbatim: *"Never go red on a stock you booked profit on."*
+- If pattern changes (HH/HL → LL/LH or vice versa) **before** original
+  stop hit → exit at break-even immediately, don't wait
+- Aziz uses **discretionary structural stops**, NOT trailing-stop orders
+- ABCD tier: 1st target = point D (≈1 R), 2nd target = extension (2 R+)
+
+#### Order-type strategy (Level 2 / liquidity)
+- Default order type: **Marketable Limit** (Market + cap, e.g. ask + $0.05)
+- **Counter-intuitive Level 2:** huge bid = bearish, huge ask = bullish
+  (real desperate sellers hit the bid, NITF large bids are low-balling)
+- Aziz uses `EDGX` route to earn ECN rebate on adds
+
+#### Indicator stack (Aziz's chart)
+- Background: **white** (easier on eyes; he hates dark themes)
+- Bullish candle: **white** (some use green); bearish: **red**
+- Indicators:
+  - **VWAP** (favourite, intraday only)
+  - 9 EMA, 20 EMA (exponential)
+  - 50 SMA, 200 SMA (simple)
+  - Prior-day close (PCL — *"most important level"*)
+  - Camarilla pivots (uses only R3/R4/S3/S4; Thor evangelist of this)
+  - Volume bars
+- **No trendlines, no Fibonacci** — Aziz: *"trendlines are subjective"*
+
+#### Time-of-day matrix
+| Window (ET) | Activity |
+|---|---|
+| 08:30 – 09:00 | Premarket scanner pass, catalyst read |
+| 09:00 – 09:25 | Finalize watchlist (3–5 names) |
+| 09:30 – 10:00 | ORB / Fallen Angel / 5-min reversal |
+| 10:00 – 11:00 | 920 reversal (2-min chart only) |
+| 11:00 – 15:30 | Aziz skips most days |
+| ~15:50 | Last 10 min: close all positions, no overnight holds |
+
+#### Strategies catalog (10+)
+Trend: ORB (1/2/5/15/30/60 min), Bull Flag, Bear Flag, ABCD, break of HoD,
+break of pre-market H/L, Red-to-Green, Fallen Angel, Mountain Pass.
+Counter-trend: 9/20 reversal ("920 trade"), parabolic reversal, double
+bottom, false breakout, extreme-price reversal, top/bottom reversal.
+
+#### 920 trade — verbatim recipe (re-confirmed)
+1. Stock strongly above VWAP for first 30–45 min
+2. **2-minute chart only**
+3. Pullback to 20 EMA between 10:00 – 10:30
+4. Long with stop just below 20 EMA
+5. 1st partial = 9 EMA touch
+6. 2nd partial = break of HoD
+7. Add on additional 9 EMA pullback if trend continues
+
+#### Engulfing crack
+- 5-min engulfing candle at the OPEN is a standalone strategy
+- Bullish engulfing = green covers prior red entirely → long
+- Bearish engulfing = red covers prior green entirely → short
+- *"I trade it almost every time I see one."*
+
+#### Measured-move target
+- After ORB breaks: take the LENGTH of the impulse leg, project it
+  forward from the breakout point → that's the profit target
+- Confirms when there's no other obvious level in the price path
+
+#### Top 3 mistakes (Jan-2025 recap)
+1. **Bias before the open** — predicting direction without waiting for
+   the open price action; Aziz: *"NVDA was gapping up to all-time high
+   and I'd have sworn it'd run; it dumped 5 %. No bias."*
+2. **Not respecting your stop loss** — averaging down kills accounts
+3. **Trading past your daily goal** — once profit target hit, STOP.
+   Trading out of boredom = death by 1000 cuts.
+
+#### Camarilla pivots (Thor's specialty, used by Aziz too via DAS)
+- Invented by **MB Curton Twig** (Canadian, late 1980s)
+- Used by Citadel and other 30–40 % of US market-maker flow
+- Aziz uses only **R3, R4, S3, S4**; ignores R1/R2/S1/S2 and R5/R6/S5/S6
+- "Gray area" between R3 and S3 = don't trade, you'll get chopped
+- Inside day (narrow pivots) → no breakout, play edges
+- Outside day (wide pivots) → breakout candidate
+- Bullish open + above R4 → back-test long; bearish open + below S4 → back-test short
+
+#### Bookmap / heat-map order flow (Thor's tool)
+- Limit orders = lines (intensity = size); market orders = dots
+- Bullish book: thin orders below, dense above → upward momentum
+- Bearish book: dense below, thin above → downward momentum
+- Balanced book = chop, no trade
+- **Iceberg detection** via DAS Display field (e.g. show 1k of 40k order)
+- **Absorption** = repeated buying that fails to move price = invisible seller
+
+#### Confluence (the entry gate)
+Aziz/Thor agree: enter only when **all four align in a 5–10 min window**:
+1. Price at a meaningful level (pivot OR VWAP OR pre-market H/L OR daily MA)
+2. Volume confirms (VPA = volume + price action)
+3. Order book matches trade direction (bullish stack for long)
+4. Iceberg / absorption defending the level
+
+> *"That window is only open 5–10 min — miss it, wait for the next one."*
+
+#### Worked examples extracted
+- **LK Jan 27 2020:** 5-min ORB long after coronavirus gap-down, scale at 37.67 / 38.00 / 38.55 / 38.79 / 39.25, exit at engulfing reversal candle
+- **DAL Jan 10 (year unstated):** earnings gap-up to near ATH 67.50, 5-min ORB long at 65.92, stop 60c, scale at 68 / 68.5 / 69, +$2 000 on 1 000 shares
+- **fubo (Jan 7 2025):** 1-min ORB long $5.50 → scaled to $6.30, +biggest gain of day
+- **NVDA (Jan 7 2025):** CES catalyst gap-up to ATH, dumped 5 % at the open. Aziz tried 4 reversal entries, took small loss each, stop-respected
+- **BM, Comcast, MSFT, IBM (earnings):** 5-min ORB technique with trendline-break confirmation, measured-move target
+
+### Trade Book ("Fachbuch") method
+Every trader must build their own printed handbook with:
+1. Stock selection rules
+2. Time-of-day windows
+3. Trade identification
+4. Trade execution (entry trigger, share size, stop)
+5. Trade management (partials, break-even, exits)
+6. Psychology notes (your common mistakes)
+7. Worked examples (5–10 historical trades)
+
+Sample trade books at `bearbulltraders.com/gifts` + chat-room Downloads
+folder. Named for their creator (e.g. "NyQuil").
+
+### Open follow-ups (updated again)
+- Exact share-size formula for Angel trades
+- 2025/2026 Zarattini × Aziz academic paper
+- Aziz's hotkey script for the scale-out 25/50/100 % buttons
+- Robert's psychology-module video list (referenced multiple times)
