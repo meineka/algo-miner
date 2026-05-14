@@ -1,0 +1,15 @@
+{
+  "id": "2026-05-14T20-15Z_mt5_first_backtest",
+  "kind": "mt5_backtest",
+  "comment": "First real-tick backtest of Aziz_NAS100 v3 on GoMarkets NAS100",
+  "params": {
+    "expert":   "Aziz_NAS100",
+    "symbol":   "NAS100",
+    "period":   "M1",
+    "from":     "2024.04.01",
+    "to":       "2026.05.14",
+    "model":    4,
+    "deposit":  10000,
+    "leverage": "1:100"
+  }
+}
