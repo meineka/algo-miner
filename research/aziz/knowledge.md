@@ -546,3 +546,49 @@ volume, so even L2-on-IEX wouldn't match TotalView coverage.
 budgeted — currently parked as a stretch goal.
 
 Sources: Databento (xnas.itch), Nasdaq Data Link NTV, Alpaca docs.
+
+### 2026-05-14 18:30Z — academic paper catalogue (Zarattini × Aziz)
+
+Closing the "2025/2026 academic paper" follow-up. Current Zarattini ×
+Aziz × Barbon catalogue on SSRN:
+
+| Year | SSRN ID | Title | Key result |
+|---|---|---|---|
+| 2023 | `4416622` | Can Day Trading Really Be Profitable? | ORB 2016-2023 baseline study |
+| 2023 | `4631351` | Volume Weighted Average Price — The Holy Grail | VWAP-anchored intraday systems |
+| 2024 | `4729284` | A Profitable Day Trading Strategy For The U.S. Equity Market | Stocks-in-Play ORB — Sharpe **2.4**, total return **>1 600 %**, 7 000+ US stocks 2016-2023; published as Swiss Finance Institute Research Paper No. 24-98; **bronze medal at unisg** |
+| 2024 | `4824172` | **NEW**: Beat the Market — Intraday Momentum Strategy for SPY | SPY-only momentum, total return **1 985 %** net of costs, **annualised 19.6 %**, 2007 – early 2024 |
+
+#### "Beat the Market" (paper 4 — new in this catalogue)
+
+The 4th paper is the most algo-miner-relevant addition: it tests
+**SPY** (single-instrument intraday momentum) rather than a stocks-
+in-play universe. Methodology highlights from the abstract:
+
+- Single instrument: **SPY ETF** (S&P 500 tracker)
+- Period: **2007 – early 2024** (covers GFC, COVID, 2022 bear, 2023 recovery)
+- Strategy class: **intraday momentum** (not ORB exactly — momentum
+  rules on the SPY 1-min chart)
+- Performance: **+1 985 %** total net of costs, ~**+19.6 % p.a.**
+- Beta near zero (uncorrelated with buy-and-hold)
+- Drawdown characteristics: not in the abstract — needs full PDF
+
+**Implication for algo-miner:**
+- A *single-instrument* intraday-momentum benchmark exists for SPY
+- We can implement a `--style aziz-spy` variant: same Aziz rule set,
+  defaults tuned for SPY 1-min (different ATR multiplier, different
+  ORB window — likely 30-min not 5-min on an index)
+- Backtesting target: replicate ≥ 15 % annualised on SPY 1-min sample
+  data to validate the algo-miner harness against published academic
+  research
+
+#### Closing this follow-up
+~~2025/2026 Zarattini × Aziz SSRN paper update~~ ✓ 2026-05-14
+
+#### Remaining open follow-ups
+- Performance attribution: which Aziz strategy contributes most $$
+  after the rotation to Market Atlas-first scalping
+- Whether Aziz publishes the Market Atlas tool description publicly
+- "Beat the Market" paper — exact intraday-momentum rules (need the
+  full PDF; SSRN abstract page is reachable but PDF is paywalled
+  from this sandbox)
