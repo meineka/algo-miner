@@ -1,0 +1,357 @@
+# tactiq.io free youtube transcript
+# Live DAY Trading $17,636: Must-Have Trading Tool (Full Trade Recording)
+# https://www.youtube.com/watch/aQmeUOhopAs
+
+00:00:00.000 All right, guys. If you're day trading
+00:00:01.600 US stock market, there is a tool that
+00:00:03.640 everybody must have. Market Atlas by
+00:00:06.240 Trading Terminal. We built it in
+00:00:07.960 collaboration with NASDAQ. And in this
+00:00:10.320 recap, I'm going to show you how I
+00:00:12.280 exactly use Market Atlas to get an
+00:00:15.040 amazing profit. And also, I have a live
+00:00:18.720 day trade on Meta earning that I
+00:00:21.480 recorded and I'm going to show you live
+00:00:23.280 trading how I use this tool. If you're
+00:00:25.560 serious about day trading, you must
+00:00:28.080 watch this recap. Let me know what you
+00:00:29.920 think and ask any question that you have
+00:00:32.080 in the comments. Thanks for watching.
+00:00:34.640 All right, guys. We had an amazing
+00:00:36.960 trading day today. Today was one of the
+00:00:39.080 most important days of the market
+00:00:41.720 because yesterday Google, Amazon,
+00:00:44.560 Microsoft, Meta reported that and we
+00:00:47.240 traded today and I'm going to do this
+00:00:48.680 recap because it's very really really
+00:00:50.280 important what happened and I think I
+00:00:52.720 think it's really worth to do this live
+00:00:55.080 trading because recap because it's very
+00:00:58.120 important. I am
+00:01:00.200 you know, recovering from a loss that I
+00:01:02.280 had at the open on Google. So, [snorts]
+00:01:04.239 Google at the open had this big order at
+00:01:05.960 375 and toward the the 380. So, I think
+00:01:10.240 it is 380 here and at the open, you
+00:01:13.280 know, ripped higher, you know, and I
+00:01:15.960 went long for break of 375. You know,
+00:01:18.520 obviously in the pre-market we had
+00:01:19.760 around 375, but I got to stopped out on
+00:01:22.320 it because it had the earning yesterday
+00:01:24.520 and it you know, broke the all-time high
+00:01:26.200 and I was really bullish on it. And the
+00:01:28.240 first trade that we did on the Google
+00:01:29.760 was very very, you know, you know, good
+00:01:32.640 one minute opening range breakout rip
+00:01:34.080 above the VWAP. But unfortunately, I
+00:01:35.800 went very heavy size in it and
+00:01:36.960 unfortunately got to stopped out on it.
+00:01:38.960 Because it just couldn't hold above the
+00:01:40.640 VWAP. And then it went down and I tried
+00:01:42.720 a couple of times because we're still
+00:01:44.360 seeing this big order of 375 380. Went
+00:01:47.080 long for the break another break got to
+00:01:48.760 stopped out and you know, at multiple
+00:01:50.440 times in there. I think two more times I
+00:01:52.320 tried to go long below the VWAP and I
+00:01:53.720 got to stopped out. But finally, toward
+00:01:55.720 the end of the day at 10:45 really
+00:01:58.480 started ripping back up and I went long
+00:02:00.480 added more and came above the VWAP just
+00:02:02.920 partial added more again. As you see
+00:02:05.280 here, right now it's going through the
+00:02:06.720 375 live you can see that you know,
+00:02:09.399 Google is going through this 375 this
+00:02:12.120 big orders that are stacking up and
+00:02:15.080 ready for uh going
+00:02:18.240 you know, through the 375. So, as you
+00:02:20.440 see this is the last trade that I did.
+00:02:22.080 So, went long and added more at 375 and
+00:02:24.960 I have the order already getting at 375.
+00:02:27.480 So, just looking at the Google right now
+00:02:30.080 it's very very important you know,
+00:02:32.680 especially with the 375 Market Atlas
+00:02:34.960 that we're having. Market Atlas is a
+00:02:36.400 tool that we built with partnership with
+00:02:38.400 NASDAQ is the depth of market for all
+00:02:41.760 the market makers and orders are going
+00:02:43.440 up. So, the orders that this is the bid
+00:02:45.040 and ask a spread. So, the orders that
+00:02:47.120 are to the upside they're sell orders
+00:02:49.160 the orders that are to the downside are
+00:02:50.400 buy orders. And you see there's not much
+00:02:52.240 of a buy order down there, but there's a
+00:02:53.720 lot of sell orders to the upside. Means
+00:02:55.440 that there's a lot of liquidity stacking
+00:02:57.520 up. And the price usually goes toward
+00:02:59.640 the liquidity and as you see here and I
+00:03:01.280 have a lot of recording in the
+00:03:02.200 screenshots that I'm just showing it
+00:03:03.840 later is prices going toward these pools
+00:03:06.720 of liquidity. This is the same as level
+00:03:09.640 two that you're seeing here. So, the
+00:03:11.600 level two that you're seeing here is
+00:03:13.240 exactly this
+00:03:14.680 data is a little bit more accurate our
+00:03:16.560 tool. Plus it has the time axis. So, you
+00:03:19.240 know, this is just the top of the book.
+00:03:21.160 So, a lot of orders you won't see, but
+00:03:22.720 this one is you can see with the time
+00:03:24.640 axis and also more accurate. So, if the
+00:03:27.480 price kind of come through 375 which you
+00:03:29.640 will in the next few minutes so, you see
+00:03:32.480 this big order of 36,000 shares in you
+00:03:35.600 know, the ask level two as well. So, the
+00:03:37.520 TotalView is the only depth of market
+00:03:40.120 available through NASDAQ. Everything
+00:03:41.560 else that you see
+00:03:43.120 that they say depth of market, but it's
+00:03:44.480 not from NASDAQ TotalView would be
+00:03:47.080 something that I don't think you need to
+00:03:49.320 take it very seriously.
+00:03:51.000 So, [snorts] I'm going to show you a
+00:03:52.400 couple of screenshots of how we did
+00:03:55.280 trade it today and because I have two
+00:03:58.400 recording and uh I have two recording
+00:04:01.480 and uh um
+00:04:05.160 that I want to show it to you.
+00:04:08.000 Let me see just let's see all together
+00:04:09.760 375. See do you see the orders are here?
+00:04:11.680 That's exactly the orders that I want to
+00:04:13.360 see. You see the combination of all of
+00:04:15.200 these is at 375. Boom! I got filled
+00:04:17.519 actually got a partial fill on it and
+00:04:19.440 now I got fully filled in there. So, I
+00:04:20.720 had order in there. So, I got partial
+00:04:22.200 filled and then it's going to go higher.
+00:04:24.400 So, the next order is at 376 and then
+00:04:27.040 I'll probably going to go to through all
+00:04:28.440 the way up to 380. So, 370 are the big
+00:04:30.360 orders. It's not much of a big order
+00:04:32.120 here. The 380 is the order that we want
+00:04:34.480 to go there.
+00:04:35.520 And this is exactly what happened at the
+00:04:38.880 pre-market as well. So, I want to show
+00:04:40.760 you the pre-market uh
+00:04:42.480 and uh
+00:04:44.440 see how the pre-market orders are.
+00:04:49.520 All right, guys. So, now we're back. So,
+00:04:51.400 as you see this is 9:25.
+00:04:54.320 So, you see 9:25 we you know, had the
+00:04:56.800 pre-market trade above the VWAP. It's
+00:04:58.560 the earning call for Google.
+00:05:00.400 And you see the 375 and the big order at
+00:05:02.960 380 is stacking up there. So, that's why
+00:05:05.520 I was really bullish to go toward the
+00:05:06.920 375 and 380. Obviously, the orders in
+00:05:09.200 the pre-market are less, but obviously
+00:05:11.080 there is an imbalance in there.
+00:05:12.920 And the [clears throat] moment that went
+00:05:15.160 up, so the orders at 375 are really
+00:05:17.520 picked up. So, this is exactly for one
+00:05:19.320 minute opening range breakout that we
+00:05:20.480 wanted to do. So, it ripped at 9:32. We
+00:05:23.280 saw big order at 379 48,000 shares and
+00:05:26.040 380 39,000 shares. So, it was really
+00:05:28.360 ready to go toward the break of 375 at
+00:05:31.000 380. However, you know, sometimes
+00:05:33.360 disappointment happens and you get to
+00:05:35.040 stopped out. But when I went back here,
+00:05:37.720 so again this was the trade first trade
+00:05:39.680 that I got the screenshots and then we
+00:05:41.080 tried to catch this move on it and it
+00:05:43.360 got stopped out and finally,
+00:05:44.533 [clears throat]
+00:05:45.120 you know, when the orders really showed
+00:05:46.560 up at 373 374 it was a reason to go up
+00:05:49.280 and then we added more and then these
+00:05:51.080 are just before you saw that I'm having
+00:05:53.680 order to get through to 375.
+00:05:56.324 >> [clears throat]
+00:05:57.040 >> So, um and again, you know, when we went
+00:06:00.200 long here for the other trades we always
+00:06:01.800 had these big orders up there. That's
+00:06:03.240 why one of the reasons that I was trying
+00:06:04.680 to go up is you know, big orders. And at
+00:06:07.200 one point got choppy there's you know,
+00:06:08.640 as you see there's not much of an order
+00:06:09.920 to the upside compared to the downside
+00:06:11.600 and that's why I probably shouldn't have
+00:06:13.240 traded that one. Another trade that we
+00:06:15.440 did was in Meta and I'm going to talk
+00:06:17.080 about it and I have a video recording on
+00:06:18.720 Meta as well. The Meta had a huge order
+00:06:21.360 at 600 and 600 was a very important
+00:06:24.360 daily level back in January. So, Meta
+00:06:26.960 had earning it was gapping down 10% as
+00:06:29.080 well and right at around the time that
+00:06:31.280 it becomes short selling restriction.
+00:06:33.080 So, Meta you know, I was a really nice
+00:06:35.600 one minute opening range breakout, but I
+00:06:36.880 didn't see that unfortunately. By the
+00:06:38.560 time that I saw it it was kind of near
+00:06:40.120 the 600 and I kind of chased that
+00:06:42.360 because it was the order was so huge and
+00:06:44.160 I was so confident that it's going to go
+00:06:45.640 there. So, I went short at the beginning
+00:06:47.960 looking at the price and you know, you
+00:06:51.320 know, bounced back a couple of times I
+00:06:52.840 added more and I still that big order of
+00:06:54.920 600 was there ready for us.
+00:06:57.280 And you know, look at the daily chart
+00:06:59.240 and this is very important. Look at the
+00:07:00.720 daily chart is back around six you know,
+00:07:02.920 January you know, 2026 we had this big
+00:07:06.360 really levels at 600 exactly 600 held it
+00:07:09.680 and you see that after that it really
+00:07:10.880 squeezed back up. So, I was expecting
+00:07:13.280 that we most likely going to really have
+00:07:15.240 this some resistance here, but if it
+00:07:16.640 breaks it would break significantly
+00:07:18.320 lower maybe to this level.
+00:07:20.160 Or even this level, you know, might be
+00:07:22.240 too much this level, but you know,
+00:07:23.720 definitely this level or this level
+00:07:25.160 would happen the next level.
+00:07:26.715 >> [snorts]
+00:07:26.880 >> So, obviously the level was very
+00:07:29.520 significant and we just continued
+00:07:31.840 looking into that. So, one time it
+00:07:33.920 popped up to VWAP I got to stopped out,
+00:07:35.720 but when rejected the VWAP I went short
+00:07:37.960 again held it through the VWAP added
+00:07:39.720 more and eventually we got to 600. And I
+00:07:42.320 have the recording of how I was fighting
+00:07:44.080 over 600. As you see at this moment the
+00:07:46.640 low of the day looked after the 620 the
+00:07:49.320 low of the day was 600. And you know, I
+00:07:52.840 come here again fighting back I have
+00:07:55.240 order at 600 at 599. So, as you see the
+00:07:57.720 orders coming at 600 now the low of the
+00:08:00.360 day at this moment is 600. So, it's
+00:08:02.760 really fighting over
+00:08:04.400 this level of 600 and the last
+00:08:07.360 screenshot again it's fighting back
+00:08:09.000 multiple times bouncing back. It's just
+00:08:10.840 really fight over and these orders in
+00:08:13.000 you know, you can actually see it here
+00:08:15.640 that are you know, through our common
+00:08:17.280 next NASDAQ at G. So, these are the
+00:08:18.960 orders that you know, sticking here. So,
+00:08:20.840 these are the orders that are actually
+00:08:22.040 going through the time and sales.
+00:08:23.840 So, the fight was continuing going on
+00:08:25.720 and eventually you know, eventually you
+00:08:29.160 know, got filled and you know, I do have
+00:08:32.000 a recording that I want to show it to
+00:08:33.599 you as a matter of fact right now. So,
+00:08:36.840 we can see this recording together to
+00:08:39.039 see how this uh
+00:08:41.559 sorry how this uh uh
+00:08:44.640 All right. So, this is a recording of a
+00:08:46.640 10:23 the time and you know, I want you
+00:08:49.720 to take a look at this behavior of how
+00:08:52.560 it's fighting at 600. So, by 10:23:27 I
+00:08:55.720 have so I have already have my orders
+00:08:57.280 here. And we're just going to go quickly
+00:08:59.520 to see what's how the trade is
+00:09:01.160 happening. See I'm adjusting my Market
+00:09:03.000 Atlas to see is is it going to break the
+00:09:06.000 600 or not. So, see the first time that
+00:09:08.480 you're putting the big transactions are
+00:09:09.960 happening at 600.
+00:09:12.480 You know, it's bouncing back and you
+00:09:14.440 know, you know, here's I took a
+00:09:15.920 screenshot on it. And here's a very
+00:09:17.800 interesting part because I got a partial
+00:09:19.320 fill on it. So, see my order it actually
+00:09:21.600 getting filled here, but I you know,
+00:09:23.120 this is the order that I did. So, that
+00:09:24.960 was the partial fill that I had and that
+00:09:27.720 was really interesting because I had the
+00:09:29.720 order at 600 and that was
+00:09:32.880 you know, the partial. So, as you see
+00:09:34.160 here I had the order of 1,000 shares to
+00:09:37.200 cover Meta at 600. I got filled only
+00:09:40.240 about you know, 300 to
+00:09:43.320 something or 500 something or partial on
+00:09:46.480 that. So, I didn't get fully on that and
+00:09:49.160 never really came back up
+00:09:51.280 went down and after that really
+00:09:53.720 completely
+00:09:55.401 >> [clears throat]
+00:09:56.240 >> reversed. So, really fought back on this
+00:09:59.240 uh level
+00:10:00.760 and they really bounced back after.
+00:10:03.800 And then we went through NVDA. So, so
+00:10:06.360 the question is uh you know, why you
+00:10:08.960 know, these big orders are attracting
+00:10:11.000 the
+00:10:11.920 uh orders. So, when there's a huge order
+00:10:13.360 to the downside, it means that all the
+00:10:14.720 people who want to buy, they're bidding
+00:10:16.320 lower. Nobody is interested to buy uh
+00:10:19.800 you know, higher price. That's why
+00:10:21.240 they're all putting order like myself,
+00:10:22.960 I'm short, but I'm not covering. I'm
+00:10:24.720 just covering at 600 and below. So, it
+00:10:26.880 means that the you know, the psychology
+00:10:28.560 of the traders are expecting the price
+00:10:30.400 is going to lower. So, we have a lot of
+00:10:32.960 the the tool is available through uh
+00:10:34.600 trading terminal and it's a very
+00:10:36.240 important. It's you know, it's a very
+00:10:38.000 very good product uh by Nasdaq. I'm
+00:10:39.960 really uh grateful that Nasdaq provided
+00:10:42.240 this one and you know, you we can get a
+00:10:44.160 lot of these beautiful scalps on uh
+00:10:47.147 >> [clears throat]
+00:10:48.120 >> on um on you know, trading terminal uh
+00:10:51.400 Market Atlas.
+00:10:52.880 And as you see, Google even though
+00:10:54.600 failed of that open, eventually did
+00:10:56.880 rally at 375. So, I would be you know,
+00:10:59.400 not surprised if the Google would hit
+00:11:01.400 380 today as well. So, as the market is
+00:11:03.480 really bouncing, right?
+00:11:04.839 Everybody should really have if you're
+00:11:06.320 trading and day trading uh especially
+00:11:08.240 for the mid to large cap stocks, you
+00:11:10.520 have to really look at uh the depth of
+00:11:12.320 market like Amazon for example. Right
+00:11:14.480 now, there's some big orders to the
+00:11:15.640 downside. Meta, you know, 604 is over
+00:11:18.960 there and NVDA, 200, 201 is a big level
+00:11:22.440 that is probably going to go lower.
+00:11:24.320 Tesla, we have the 380 order. So, Tesla
+00:11:26.400 is also another interesting uh stock
+00:11:28.160 that is really the total fear. As you
+00:11:29.880 see, it's ripping higher and then the
+00:11:31.520 380 is a big order that is higher and
+00:11:33.839 wants to go toward that. So, if you have
+00:11:35.320 a daily chart, you know, Tesla is going
+00:11:37.200 toward the 380. So, that's a very
+00:11:38.880 interesting uh situation. QCOM was
+00:11:41.240 another one. QCOM was amazing that you
+00:11:43.600 know, the depth of market was saying
+00:11:45.200 that it's going to go to 185. So, we you
+00:11:47.160 know, we called it from here at 170
+00:11:49.320 because we had some big order at 180,
+00:11:50.920 175 and you know, it's just continued
+00:11:52.720 going higher. And as you see here, even
+00:11:54.640 right now 188, 187
+00:11:57.040 uh you can see that the orders Market
+00:11:58.520 Atlas. Now, there's big order at 190.
+00:12:00.200 So, I can see that.
+00:12:01.520 So guys, make sure to check uh trading
+00:12:03.200 terminal and uh you know, if you want to
+00:12:05.760 trade live with us, we trade in BarChart
+00:12:07.680 Traders Live or check out our YouTube
+00:12:09.440 channel. There's lots of educational
+00:12:10.800 material in there. Thank you and have a
+00:12:12.720 good day, guys.
+00:12:14.160 All right, guys. If you want to try
+00:12:16.240 Market Atlas and all the premium tools
+00:12:18.280 that we have at Trading Terminal, just
+00:12:20.720 comment Atlas and I'll send you a link
+00:12:23.200 for a trial.

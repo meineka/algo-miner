@@ -157,4 +157,36 @@ MEDIUM = QualityConfig(
     llm_min_confidence     = 75,
 )
 
-PRESETS = {"strict": STRICT, "medium": MEDIUM, "default": DEFAULT, "loose": LOOSE}
+# ──────────────────────────────────────────────────────────────────────
+# AZIZ — Andrew Aziz day-trader profile (Bear Bull Traders rule book)
+#
+# Gate                    Value     Reasoning (Aziz / BBT)
+# ─────────────────────── ───────── ──────────────────────────────────────
+# min_agreement           2 / 6     Confluence — 2 strategies need to align
+# max_risk_pct            1.0%      Aziz: ≤ 1 % per trade
+# max_daily_loss          2.0%      Aziz: hard stop, walk away
+# max_consecutive_losses  3         "Three strikes, you're done for the day"
+# cooldown_bars           5         No revenge trading
+# max_drawdown            6%        BBT classroom kill-switch
+# atr_stop_multiplier     1.5       Aziz uses tight intraday stops
+# block_counter_trend     True      "Don't fight the morning trend"
+# ──────────────────────────────────────────────────────────────────────
+AZIZ = QualityConfig(
+    block_counter_trend    = True,
+    min_agreement          = 2,       # 2 of 6 Aziz strategies must agree
+    max_daily_loss_pct     = 0.020,   # 2 %
+    max_portfolio_heat_pct = 0.040,   # 4 %
+    health_window          = 30,
+    min_sharpe             = 0.7,
+    min_profit_factor      = 1.20,
+    max_drawdown_pct       = 0.060,   # 6 %
+    max_consecutive_losses = 3,
+    cooldown_bars          = 5,
+    min_atr_multiplier     = 0.0005,
+    max_risk_pct           = 0.010,   # 1 %
+    atr_stop_multiplier    = 1.5,
+    llm_enabled            = False,
+    llm_min_confidence     = 75,
+)
+
+PRESETS = {"strict": STRICT, "medium": MEDIUM, "default": DEFAULT, "loose": LOOSE, "aziz": AZIZ}

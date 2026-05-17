@@ -33,8 +33,14 @@ def parse_args() -> argparse.Namespace:
 
     # preset
     p.add_argument("--preset", type=str, default="medium",
-                   choices=["strict", "medium", "default", "loose"],
-                   help="Quality gate preset (strict = no BS)")
+                   choices=["strict", "medium", "default", "loose", "aziz"],
+                   help="Quality gate preset (strict = no BS, aziz = Bear Bull Traders defaults)")
+
+    # rule set / style
+    p.add_argument("--style", type=str, default="classic",
+                   choices=["classic", "aziz", "hybrid"],
+                   help="Rule set: classic (4 EMA/RSI/Donchian/Vol), "
+                        "aziz (6 ORB/VWAP/Flag/ABCD/RtG/MA), or hybrid")
 
     # overrides
     p.add_argument("--capital",  type=float, default=10_000, help="Initial capital")
@@ -87,14 +93,22 @@ def main() -> None:
 
     preset_label = args.preset.upper()
     llm_label    = " + LLM Layer 7" if cfg.llm_enabled else ""
+    rule_total   = 6 if args.style == "aziz" else (10 if args.style == "hybrid" else 4)
     print(f"Quality preset : {preset_label}{llm_label}")
-    print(f"  min_agreement={cfg.min_agreement}/4  "
+    print(f"  min_agreement={cfg.min_agreement}/{rule_total}  "
           f"max_risk={cfg.max_risk_pct*100:.1f}%  "
           f"max_daily_loss={cfg.max_daily_loss_pct*100:.1f}%  "
           f"min_sharpe={cfg.min_sharpe}  "
           f"min_PF={cfg.min_profit_factor}  "
           f"max_DD={cfg.max_drawdown_pct*100:.0f}%")
     print()
+
+    # If the preset is 'aziz' and the user didn't pick a style explicitly,
+    # default style to 'aziz' so the rule set matches the preset's intent.
+    style = args.style
+    if args.preset == "aziz" and style == "classic":
+        style = "aziz"
+    print(f"Rule style     : {style.upper()}")
 
     # ── Simulator ────────────────────────────────────────────────────
     api_key = args.llm_key or os.environ.get("ANTHROPIC_API_KEY")
@@ -104,6 +118,7 @@ def main() -> None:
         take_profit_mult = args.rr,
         config           = cfg,
         llm_api_key      = api_key if cfg.llm_enabled else None,
+        style            = style,
     )
 
     result = sim.run(df, verbose=args.verbose)
@@ -132,8 +147,9 @@ def main() -> None:
         print(report.summary())
 
     if args.mine:
-        print(f"\nMining strategies: {args.variants} random + community seeds ...")
-        miner   = StrategyMiner(n_random=args.variants, seed=args.seed)
+        print(f"\nMining strategies: {args.variants} random + community seeds "
+              f"(style={style}) ...")
+        miner   = StrategyMiner(n_random=args.variants, seed=args.seed, style=style)
         genomes = miner.generate()
         print(f"  Pool size: {len(genomes)} genomes  "
               f"(IS={args.is_split*100:.0f}% / OOS={100-args.is_split*100:.0f}%)")
@@ -144,6 +160,7 @@ def main() -> None:
             initial_capital = args.capital,
             allow_short     = not args.no_short,
             verbose         = args.verbose,
+            style           = style,
         )
         t_result = tourney.run(df, genomes)
         print(t_result.summary())
