@@ -6,6 +6,14 @@
 //
 //  ANDREW-AZIZ HYBRID EA FOR NQ (NASDAQ-100 CFD)
 //  =================================================
+//  Version 4.0 — Aziz-expert-review findings applied (2026-05-17 review):
+//    • CRITICAL: news blackout window (CPI / FOMC / NFP) — Inp_UseNewsBlackout
+//    • HIGH:     risk base = starting balance, not live equity (anti-compound-blow-up)
+//    • MEDIUM:   MFE / MAE per-trade tracking in journal
+//    • Volatility-regime gate (Aziz' 2025-Tariff-War lesson) — shrinks size,
+//                widens stops, multiplies cooldown when 5d-ATR / 60d-ATR > 2.
+//    • Default ORB window → 5 min (Aziz' current "bread and butter")
+//    • Default auto-flat → 15 min before close (last 15 = liquidity garbage)
 //  Version 3.0 — second audit pass; bug-fixes over v2.0:
 //    • VWAP-reclaim now actually triggers (streak captured BEFORE cross).
 //    • OnNewBar pattern — signal evaluated once per M1 close, not every tick.
@@ -29,10 +37,10 @@
 
 #property copyright   "meineka"
 #property link        "https://github.com/meineka/algo-miner"
-#property version     "3.00"
+#property version     "4.00"
 #property strict
 #property description "Aziz hybrid EA for NQ — ORB + VWAP reclaim + 9/20 EMA trend"
-#property description "Audited v3: VWAP-reclaim fix, OnNewBar gate, spread filter, auto-flat"
+#property description "v4: news blackout + vol-regime gate + risk-base lock + MFE/MAE tracking"
 
 #include <Trade\Trade.mqh>
 #include <Trade\PositionInfo.mqh>
@@ -51,10 +59,10 @@ input int    Inp_SessionOpenMin    = 30;
 input int    Inp_SessionCloseHour  = 20;
 input int    Inp_SessionCloseMin   = 0;
 input int    Inp_BlackoutCloseMin  = 30;
-input int    Inp_ORB_WindowMinutes = 15;
+input int    Inp_ORB_WindowMinutes = 5;        // v4 default (Aziz' actual default post-2024)
 input int    Inp_MaxTradesPerDay   = 4;
 input bool   Inp_AutoFlatOnClose   = true;   // close all positions N min before session close
-input int    Inp_AutoFlatMin       = 5;
+input int    Inp_AutoFlatMin       = 15;       // v4 default — last 15 min before close is liquidity garbage
 
 input group "── Entry routes ──"
 input bool   Inp_UseORB            = true;
@@ -69,7 +77,26 @@ input int    Inp_EMA_Slow           = 20;
 input double Inp_BreakoutVolMult    = 1.3;
 input int    Inp_MaxSpreadPoints    = 50;    // 0 disables; in MT5 points
 
+input group "── News blackout (v4 — CRITICAL Aziz #1) ──"
+input bool   Inp_UseNewsBlackout    = true;
+input int    Inp_NewsBlackBeforeMin = 10;
+input int    Inp_NewsBlackAfterMin  = 10;
+// Semicolon-separated list of UTC "HH:MM" times to blackout. Defaults cover
+// US CPI/PPI/NFP (13:30 UTC), Crude inv (14:30 UTC Wed), FOMC (19:00 UTC).
+input string Inp_NewsTimesUTC       = "13:30;14:00;14:30;19:00;19:30";
+
+input group "── Volatility-regime gate (v4 — Aziz' 2025-Tariff-War lesson) ──"
+input bool   Inp_UseVolRegime         = true;
+input double Inp_VolRegimeThreshold   = 2.0;   // ratio short-ATR / long-ATR
+input int    Inp_VolRegimeShortDays   = 5;
+input int    Inp_VolRegimeLongDays    = 60;
+input double Inp_VolRegimeRiskMult    = 0.5;   // shrink risk when chaos
+input double Inp_VolRegimeStopMult    = 1.5;   // widen stops when chaos
+input int    Inp_VolRegimeCooldownMul = 3;     // multiply cooldown bars when chaos
+
 input group "── Risk management (Aziz house rules) ──"
+input int    Inp_RiskBaseMode       = 0;       // 0 = starting balance (v4 default); 1 = live equity (legacy)
+input double Inp_RiskBaseResetPct   = 20.0;    // reset base after +N % growth from current base
 input double Inp_RiskPerTradePct    = 1.0;
 input double Inp_MaxDailyLossPct    = 2.0;
 input int    Inp_MaxConsecutiveLoss = 3;
