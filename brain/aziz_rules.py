@@ -277,14 +277,99 @@ def ma_trend_pullback_rule(
 
 
 # ══════════════════════════════════════════════════════════════════════
+# 7. Intraday-Momentum Boundary (Zarattini × Aziz × Barbon — "Beat the Market")
+#    SSRN 4824172 / SFI Research Paper 24-97
+# ══════════════════════════════════════════════════════════════════════
+
+def intraday_momentum_boundary_rule(
+    df:                 pd.DataFrame,
+    regimes:            Optional[List] = None,
+    lookback_days:      int = 14,
+    decision_clock_min: tuple = (0, 30),
+    session_open_min:   int = 0,
+    session_close_min:  int = 390,
+    use_gap_adjustment: bool = True,
+) -> pd.Series:
+    """
+    "Beat the Market" intraday momentum boundary breakout for index ETFs
+    (target: SPY; works on any liquid intraday instrument).
+
+    For each minute m of day d, build noise boundaries from the last
+    `lookback_days` of cumulative returns at minute m, adjusted for the
+    prior overnight gap. At HH:00 / HH:30 ticks, if the price has
+    crossed above the upper band → LONG; below the lower band → SHORT.
+
+    Reference: Zarattini, Aziz, Barbon 2024.
+    Sharpe 1.33, +19.6 % p.a., +1 985 % cumulative (2007–Q1 2024) on SPY.
+    """
+    if not isinstance(df.index, pd.DatetimeIndex):
+        # Pure mechanism degrades to no-signal on integer-indexed data.
+        return pd.Series(SIGNAL_HOLD, index=df.index, dtype=int)
+
+    # Per-bar session-minute (0 at session open)
+    sm = session_minute(df)
+    in_session = (sm >= session_open_min) & (sm < session_close_min)
+
+    # Daily anchors
+    day = pd.Series(df.index.date, index=df.index)
+    daily_open  = df["open"].groupby(day).transform("first")
+    daily_close = df["close"].groupby(day).last()
+    prev_close  = day.map(daily_close.shift(1))
+
+    # Per-(day, minute) cumulative return from session open
+    bar_ret_to_open = (df["close"] - daily_open) / daily_open
+
+    # For each minute m, mean of bar_ret_to_open over last `lookback_days`
+    # at the same session minute. We pivot day×minute and apply a rolling
+    # mean along the day axis, then flatten back.
+    df_internal = pd.DataFrame({"day": day, "sm": sm, "r": bar_ret_to_open})
+    pivot = (
+        df_internal.pivot_table(index="day", columns="sm", values="r", aggfunc="last")
+                   .sort_index()
+    )
+    mean_pivot = pivot.shift(1).rolling(lookback_days, min_periods=max(1, lookback_days // 2)).mean()
+
+    # Map mean back onto the original bar timeline
+    pair = list(zip(day.values, sm.values))
+    mean_ret = pd.Series(
+        [mean_pivot.at[d, m] if (d in mean_pivot.index and m in mean_pivot.columns) else np.nan
+         for d, m in pair],
+        index=df.index,
+    )
+
+    # Gap adjustments (only widen the bound on the side OPPOSITE the gap)
+    if use_gap_adjustment and not prev_close.isna().all():
+        gap_up_adj   = ((daily_open - prev_close) / prev_close).clip(lower=0).fillna(0)
+        gap_down_adj = ((prev_close - daily_open) / prev_close).clip(lower=0).fillna(0)
+    else:
+        gap_up_adj   = pd.Series(0.0, index=df.index)
+        gap_down_adj = pd.Series(0.0, index=df.index)
+
+    upper = daily_open * (1.0 + mean_ret.abs() + gap_down_adj)
+    lower = daily_open * (1.0 - mean_ret.abs() - gap_up_adj)
+
+    # Decision clock — only fire at HH:00 / HH:30 (or whatever minutes given)
+    minute_of_hour = df.index.minute
+    clock_ok = pd.Series(np.isin(minute_of_hour, list(decision_clock_min)), index=df.index)
+
+    signal = pd.Series(SIGNAL_HOLD, index=df.index, dtype=int)
+    long_break  = clock_ok & in_session & (df["close"] > upper) & upper.notna()
+    short_break = clock_ok & in_session & (df["close"] < lower) & lower.notna()
+    signal[long_break]  = SIGNAL_BUY
+    signal[short_break] = SIGNAL_SELL
+    return signal
+
+
+# ══════════════════════════════════════════════════════════════════════
 # Registry of names (used by Rules.__init__ when style='aziz')
 # ══════════════════════════════════════════════════════════════════════
 
 AZIZ_RULES = (
-    ("vwap_reclaim",            vwap_reclaim_rule),
-    ("opening_range_breakout",  opening_range_breakout_rule),
-    ("bull_flag",               bull_flag_rule),
-    ("abcd_pattern",            abcd_pattern_rule),
-    ("red_to_green",            red_to_green_rule),
-    ("ma_trend_pullback",       ma_trend_pullback_rule),
+    ("vwap_reclaim",                vwap_reclaim_rule),
+    ("opening_range_breakout",      opening_range_breakout_rule),
+    ("bull_flag",                   bull_flag_rule),
+    ("abcd_pattern",                abcd_pattern_rule),
+    ("red_to_green",                red_to_green_rule),
+    ("ma_trend_pullback",           ma_trend_pullback_rule),
+    ("intraday_momentum_boundary",  intraday_momentum_boundary_rule),
 )

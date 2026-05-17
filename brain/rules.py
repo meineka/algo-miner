@@ -83,6 +83,7 @@ class Rules:
             bull_flag_rule,
             ma_trend_pullback_rule,
             red_to_green_rule,
+            intraday_momentum_boundary_rule,
         )
 
         # Pull Aziz-tunable knobs off the genome when present; fall back to
@@ -115,6 +116,12 @@ class Rules:
                 red_to_green_rule,
                 session_max_minute = g("rtg_session_max_min", 180),
                 volume_mult        = g("rtg_volume_mult", 1.3),
+            ),
+            "intraday_momentum_boundary": functools.partial(
+                intraday_momentum_boundary_rule,
+                lookback_days      = g("imb_lookback_days", 14),
+                decision_clock_min = g("imb_decision_clock_min", (0, 30)),
+                use_gap_adjustment = g("imb_use_gap_adj", True),
             ),
         }
         for name, fn in AZIZ_RULES:

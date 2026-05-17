@@ -6,7 +6,7 @@ These tests don't assert on PnL — they verify shape and integrity:
   - Every value is one of {-1, 0, +1}
   - Rules don't crash on a DatetimeIndex DataFrame nor on integer-indexed
     synthetic data
-  - The Rules registry assembles the 6 Aziz rules under style='aziz'
+  - The Rules registry assembles the 7 Aziz rules under style='aziz'
   - StrategyMiner.generate(style='aziz') produces valid genomes
   - TradeSimulator runs end-to-end with style='aziz' on real OHLC data
 """
@@ -19,6 +19,7 @@ from brain.aziz_rules import (
     AZIZ_RULES,
     abcd_pattern_rule,
     bull_flag_rule,
+    intraday_momentum_boundary_rule,
     ma_trend_pullback_rule,
     opening_range_breakout_rule,
     red_to_green_rule,
@@ -68,9 +69,14 @@ def test_rule_handles_integer_index(rule_fn):
     assert len(out) == len(df)
 
 
+def _bump_count_aziz_v7_anchor():
+    # Sentinel comment: 6 → 7 Aziz rules after adding intraday_momentum_boundary
+    pass
+
+
 def test_rules_registry_aziz_style(df_intraday):
     rules = Rules(style="aziz")
-    assert len(rules.rule_names) == 6
+    assert len(rules.rule_names) == 7
     sig = rules.evaluate(df_intraday, regimes=[None] * len(df_intraday))
     assert "signal" in sig.columns
     assert set(sig["signal"].unique()).issubset({-1, 0, 1})
@@ -78,7 +84,33 @@ def test_rules_registry_aziz_style(df_intraday):
 
 def test_rules_registry_hybrid_style(df_intraday):
     rules = Rules(style="hybrid")
-    assert len(rules.rule_names) == 10  # 4 classic + 6 aziz
+    assert len(rules.rule_names) == 11  # 4 classic + 7 aziz (incl. intraday_momentum_boundary)
+
+
+def test_intraday_momentum_boundary_shape(df_intraday):
+    sig = intraday_momentum_boundary_rule(df_intraday)
+    assert sig.index.equals(df_intraday.index)
+    assert set(sig.unique()).issubset({SIGNAL_BUY, SIGNAL_HOLD, SIGNAL_SELL})
+
+
+def test_intraday_momentum_boundary_only_fires_on_clock(df_intraday):
+    sig = intraday_momentum_boundary_rule(df_intraday, decision_clock_min=(0, 30))
+    nonzero_minutes = {ts.minute for ts in sig[sig != SIGNAL_HOLD].index}
+    assert nonzero_minutes.issubset({0, 30})
+
+
+def test_intraday_momentum_boundary_handles_integer_index():
+    df = OHLCData.generate(n_bars=200, seed=42).reset_index(drop=True)
+    sig = intraday_momentum_boundary_rule(df)
+    assert len(sig) == len(df)
+    # On integer-indexed data the rule must degrade to no-signal, not crash
+    assert (sig == SIGNAL_HOLD).all()
+
+
+def test_intraday_momentum_boundary_in_aziz_registry():
+    rules = Rules(style="aziz")
+    assert "intraday_momentum_boundary" in rules.rule_names
+    assert len(rules.rule_names) == 7
 
 
 def test_rules_registry_rejects_unknown_style():
